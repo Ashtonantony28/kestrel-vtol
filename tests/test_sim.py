@@ -73,6 +73,30 @@ def test_yaw_torque_sign(v):
     assert d[3][2] > 0
 
 
+def test_yaw_tilt_adds_yaw_authority_without_side_force(v):
+    # The 4 deg motor tilt must add yaw torque of the same sign as prop drag (>2x total), cancel side force
+    # and leave hover lift within 0.5 %.
+    base = [0.5] * 4 + [0]
+    rotor, vp = trim.steady_rotor(v, base)
+    hi = list(rotor)
+    hi[0] *= 1.05
+    hi[1] *= 1.05
+    args = ((0, 0, -50.0), (0, 0, 0), (1, 0, 0, 0), (0, 0, 0))
+    yaw_tilted = v.derivs(*args, hi, [0, 0], base, vp)[3][2]
+    side_tilted = v.derivs(*args, rotor, [0, 0], base, vp)[1][1]
+    lift_tilted = v.derivs(*args, rotor, [0, 0], base, vp)[1][2]
+    c, s_ = v.tilt_c, v.tilt_s
+    v.tilt_c, v.tilt_s = 1.0, 0.0
+    try:
+        yaw_flat = v.derivs(*args, hi, [0, 0], base, vp)[3][2]
+        lift_flat = v.derivs(*args, rotor, [0, 0], base, vp)[1][2]
+    finally:
+        v.tilt_c, v.tilt_s = c, s_
+    assert yaw_flat > 0 and yaw_tilted > 2.0 * yaw_flat
+    assert abs(side_tilted) < 1e-6
+    assert abs((v.g - lift_tilted) / (v.g - lift_flat) - 1) < 0.005   # a_z = g - T/m (NED)
+
+
 def test_pitch_roll_control_signs(v):
     V = 13.0
     up = trim.eval_state(v, V, 0.08, 0.0, -0.1)[3][1]

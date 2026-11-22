@@ -10,7 +10,7 @@ names the model value it checks and what to do if the real value is off.
 | B2 | CG | balance on fingertips at the marked CG line (`cad/out/` template mark, 168 mm behind root LE) | level ±3 mm | slide the battery; never add tail weight blindly |
 | B3 | Lift motor thrust | motor on a kitchen scale, prop **on**, 50 % and 100 % throttle, wattmeter | ≥ 6.4 N at 100 % (model 7.1); hover ≤ 4.2 A each | fit 1000KV + 10×4.5 from a different batch, or reduce AUW |
 | B4 | Pusher static thrust | same rig | ≥ 6.0 N (model 6.95) | the 8×6 prop is the knob: 8×6 → 9×6 adds thrust and current, so re-check ESC amps |
-| B5 | Motor direction | ArduPilot motor test, props off | 1 FR CCW, 2 RL CCW, 3 FL CW, 4 RR CW (ADR 0001) | swap any two motor wires |
+| B5 | Motor direction and tilt | ArduPilot motor test, props off; look along each boom | 1 FR CCW, 2 RL CCW, 3 FL CW, 4 RR CW (ADR 0001). Each mount leans 4° so the prop's thrust pushes the arm the same way the prop's drag twists the airframe: FR and RR lean right (outboard on the right boom), FL and RL lean left (outboard on the left boom), i.e. all four lean outboard (ADR 0004) | swap any two motor wires; turn a mount 180° on its boom |
 | B6 | Elevon direction | FBWA, tilt the aircraft by hand (it should push back) | right wing dipped by hand → right elevon goes down; nose dipped → both go up; right stick right → right elevon goes up | `SERVO1/2_REVERSED`, or swap 77/78 |
 | B7 | Elevon throw | measure the trailing edge | ±20° (= ±27 mm at the elevon root) | servo horn hole |
 | B8 | Battery sag | 10 A load, read voltage | ≥ 11.1 V on a full pack | the pack is tired; endurance is the first thing to suffer |

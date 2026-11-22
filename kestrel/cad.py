@@ -415,11 +415,15 @@ def write_templates(sheets):
 
 def printed_parts(s):
     tube_d = s["booms"]["diameter"] * 1000
-    # motor mount: 34 x 34 x 5 mm plate, A2212 cross-mount holes on 16 / 19 mm pattern, tube saddle below
-    plate = bd.Box(34, 34, 5)
+    # motor mount: 34 x 34 mm plate, A2212 cross-mount holes on 16 / 19 mm pattern, tube saddle below.
+    # The plate is tilted about the boom by yaw_tilt_deg. All four mounts are identical: fit each so its
+    # motor leans outboard (FR/RR right, FL/RL left); turning a mount 180 deg on the boom flips the lean.
+    tilt = s["lift_rotors"].get("yaw_tilt_deg", 0.0)
+    plate = bd.Box(34, 34, 7)
     for (x, y) in [(8, 0), (-8, 0), (0, 9.5), (0, -9.5)]:
-        plate -= bd.Cylinder(1.6, 6).translate((x, y, 0))
-    plate -= bd.Cylinder(4.5, 6)  # shaft clearance
+        plate -= bd.Cylinder(1.6, 9).translate((x, y, 0))
+    plate -= bd.Cylinder(4.5, 9)  # shaft clearance
+    plate = plate.rotate(bd.Axis.X, tilt).translate((0, 0, 1.0))
     saddle = bd.Box(34, tube_d + 6, tube_d + 4).translate((0, 0, -(tube_d + 4) / 2 - 2.5))
     saddle -= bd.Cylinder((tube_d + 0.3) / 2, 40, rotation=(0, 90, 0)).translate((0, 0, -(tube_d + 4) / 2 - 2.5))
     saddle -= bd.Box(36, 1.5, tube_d).translate((0, 0, -(tube_d + 4) - 2.5))     # clamp slot

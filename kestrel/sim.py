@@ -131,6 +131,8 @@ class Vehicle:
         lr = s["lift_rotors"]
         x0, y0, z0 = self.cg
         zr = lr.get("z", -0.035)
+        tau = math.radians(lr.get("yaw_tilt_deg", 0.0))
+        self.tilt_c, self.tilt_s = math.cos(tau), math.sin(tau)
         # ArduPilot QuadPlane X numbering: 1 FR, 2 RL, 3 FL, 4 RR
         self.rotor_pos = ((lr["x_front"] - x0, lr["y"] - y0, zr - z0), (lr["x_rear"] - x0, -lr["y"] - y0, zr - z0),
                           (lr["x_front"] - x0, -lr["y"] - y0, zr - z0), (lr["x_rear"] - x0, lr["y"] - y0, zr - z0))
@@ -283,7 +285,9 @@ class Vehicle:
                 drot[k] = 0.0
             i_tot += duty[k] * ia
             hx, hy = -self.k_hforce * n * vloc[0], -self.k_hforce * n * vloc[1]
-            fx, fy, fz = hx, hy, -t
+            # yaw tilt: lateral thrust whose moment about z (arm x) has the sign of this rotor's drag torque
+            side = self.LIFT_DIR[k] * (1.0 if r[0] > 0 else -1.0)
+            fx, fy, fz = hx, hy + side * t * self.tilt_s, -t * self.tilt_c
             Fx += fx; Fy += fy; Fz += fz
             Mx += r[1] * fz - r[2] * fy
             My += r[2] * fx - r[0] * fz

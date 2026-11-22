@@ -43,6 +43,8 @@ lift_rotors:            # quad X; positions are motor axes. Rotor centroid = des
   x_rear: -0.518        # rear disc overlaps only the last few cm of the wing (less hover download)
   y: 0.25
   z: -0.035             # prop plane above the boom
+  yaw_tilt_deg: 4       # motors tilted about the boom so thrust adds yaw torque in the same sense as prop drag
+                        # (ArduPilot QuadPlane building guide practice); ~3x hover yaw authority, -0.2 % lift
   # ArduPilot QuadPlane motor numbering (Q_FRAME_TYPE=1, X): 1 front-right CCW, 2 rear-left CCW, 3 front-left CW, 4 rear-right CW
 
 pusher:

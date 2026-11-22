@@ -1,0 +1,101 @@
+# Kestrel design review (M0–M4 complete, 2026-11-22)
+
+**Verdict:** the lean v2 design closes. On paper and in simulation it meets every sizing target. It flies
+ArduPlane 4.7.3 missions hands-off, with no airspeed sensor, in winds up to 10 m/s. It survives the
+single failures that a quad can survive, and lands with a 20 % battery reserve after about 18 minutes.
+
+The most useful result is the list of seven problems that the first parameter file had (ADR 0004).
+All seven were found and fixed in simulation, at $0, before buying anything.
+
+What simulation cannot prove is listed at the end. The bench checklist (`build/BENCH.md`) measures those items.
+
+## 1. How it was tested
+
+| Layer | Tool | Verify command | Result |
+|---|---|---|---|
+| Sizing, BOM | own models, datasheet-fitted motor/prop | `python -m kestrel.sizing` | 9/9 checks pass |
+| Aero | AeroSandbox 4.2.10 AeroBuildup + NeuralFoil, trimmed alpha × elevon tables | `python -m kestrel.aero` | see §2 |
+| CAD | build123d: clearances, mass properties, nesting, 1:1 templates | `python -m kestrel.cad` | 5 sheets, no collisions, mass −1.5 % vs budget |
+| 6-DOF physics | own pure-Python model, analytic tests | `pytest -q` | 31 pass |
+| Flight software | **real ArduPlane 4.7.3** in SITL, lockstep JSON link to our physics | `KESTREL_SITL=1 pytest -q tests/test_sitl.py` | hover and full mission pass |
+| Robustness | wind, faults, endurance, Monte Carlo | `python -m kestrel.mc --suite …` then `python -m kestrel.report` | see §3 |
+| Radio bridge | C++ core host tests, ASan/UBSan, sketch type-check | `ground/tests/run.sh` | 2,276 checks pass |
+
+## 2. Design numbers (all derived from `spec/vehicle.yaml`)
+
+| | Value | Target |
+|---|---|---|
+| All-up weight (CAD) | 1.04 kg | ≤ 1.10 kg |
+| Hover T/W (full / empty pack) | 2.79 / 2.52 | ≥ 2.0 / 1.6 |
+| Hover throttle, power | 49 %, 86 W | ≤ 60 % |
+| Cruise | 14 m/s, L/D 6.7, 51 W, pusher 64 % | |
+| Pusher excess thrust at cruise | 2.7× | ≥ 2 |
+| Trimmed stall | 9.6 m/s (CLmax 0.67 trimmed) | ≤ 10.5 m/s |
+| Static margin | 9.3 % at cruise; 5.0 % minimum over 2–15° | 4–16 % |
+| Cruise trim | alpha 6.8°, elevon −1° | small elevon |
+| Endurance, model | 21.7 min to empty, 17.1 min with 20 % reserve | ≥ 12 min |
+| Endurance, SITL (mission flown until the reserve trigger, then RTL and land) | **18.3 min** nominal, **15.5 min** pessimistic (+25 % drag, +8 % mass, −5 % thrust, −10 % capacity), both landing with 20 % left | |
+| Aircraft / total cost | $177–240 / $205–292 | ≤ $240 aircraft |
+
+## 3. SITL results (final parameter file, `sitl/kestrel.parm`)
+
+**Mission** ("basic"): VTOL takeoff to 30 m, transition, 4 waypoints over 250 m legs at 40–50 m, back-transition and VTOL landing at home.
+
+| Suite | Result | Notes |
+|---|---|---|
+| Calm | pass, lands 0.03 m from home | `docs/img/mission_calm.png` |
+| Wind, 0/4/7/10 m/s steady + 1.5 m/s gusts, two directions | **7/7**; worst landing 1.9 m | `docs/img/mission_wind7.png` |
+| Same, with the optional $15 airspeed sensor | 7/7 | the sensor is *not* needed by this test |
+| Dead pusher in cruise | pass, lands 0.03 m | the transition times out, and it flies home as a quad |
+| RC link lost in cruise | pass | RTL, VTOL landing at home |
+| Left elevon stuck in cruise | pass | the lift motors catch the slow sink below 15 m |
+| CG ±10 mm, +15 % mass, −10 % thrust, +30 % drag, warped wing | 6/6 pass | |
+| Lift motor 1 fails in hover | **crash, as expected** | no quad survives this; see the operational mitigation |
+| Monte Carlo, 100 runs (wind 0–7 m/s, gusts 0–2 m/s, ±4 % mass, ±6 mm CG, ±12 % drag, lift/Cm/roll-trim errors, motor spread, battery resistance 0.8–1.6×) | **99/100 pass** | landing error: median 0.64 m, 95th percentile 2.1 m, 91 % within 2 m. Touchdown ≤ 0.77 m/s. `docs/img/monte_carlo.png` |
+
+The one Monte Carlo miss (run mc_049: 6 m/s wind, 1.7 m/s gusts) landed softly, at 0.33 m/s, but 28 m
+from the pad. During the final 6 m of descent, with the lift motors near idle, it drifted about 2 m/s.
+The likeliest cause is gust lift on the wing while the landing controller has little thrust to work
+with. It is an open item to look for in the first real landing logs (M6).
+
+The plan's M4 target was "≥ 98 % complete and within 2 m". Completion is met (99 %), but the
+2 m accuracy is not quite: 91 % of runs, and 95 % land within 2.1 m.
+
+## 4. Problems found and fixed (details in ADR 0004)
+
+1. In wind, the synthetic-airspeed estimate kept re-triggering the transition: assist speed lowered to 10, with a 1 s delay.
+2. At 10 m/s, a wing hovering side-on saturated a lift motor: weathervaning turned on.
+3. A flying wing leaning into the wind in hover makes downforce (alpha −27°): the pusher now holds position.
+4. In gusty crosswind, yaw authority ran out: the lift motors now tilt 4° outboard, which roughly triples yaw authority.
+   The motor-mount STL was updated to match.
+5. A dead pusher meant the aircraft circled in a "transition" until the pack died: there is now a 45 s transition time-out, then QRTL.
+6. A stuck elevon sank the wing into the ground at cruise speed: the lift motors now assist below 15 m.
+7. The voltage-based low-battery warning came with about 1 minute left: the reserve is now capacity-based (RTL at 30 % left, QLAND at 15 %).
+
+Along the way, the tests also caught bugs in our own tools:
+
+- **Radio bridge:** the link watchdog's timeout was effectively 600 ms instead of 300.
+- **Sim battery:** it never ran out.
+- **Templates:** stale template sheets were left behind after a re-nest.
+- **CSV logs:** they recorded the commanded elevon angle, not the actual one.
+
+## 5. Known limits and open items
+
+- **Wind:** the design is demonstrated to 10 m/s mean with 1.5 m/s gusts. Fly the first flights in under 4 m/s,
+  and treat 7 m/s as the working limit until real logs agree with the sim.
+- **Aerodynamics are modelled, not measured.**
+  - NeuralFoil and AeroBuildup at Re ≈ 150k on a foam wing with a sharp-ish leading edge are approximate.
+  - CLmax carries a 0.9 foam factor.
+  - Clb (dihedral effect) is slightly positive. That is weak, but the autopilot copes in SITL.
+  - B3/B4 thrust tests and M6 log comparison calibrate the model.
+- **Not modelled:**
+  - propwash over the wing during transition
+  - ground effect
+  - servo slop
+  - flexing of the foam wing
+  - GPS and compass errors (SITL's defaults are used)
+- **The radio bridge has not been compiled against the real Bluepad32 core** (the sandbox could not install the
+  Arduino toolchain), and the ELRS baud rate (400k or 420k) is unconfirmed. Both are bench item B9.
+- **The M3 cross-check against SITL's built-in quadplane model was not done.** Running the same mission on that generic model would check the mission scripts, not this aircraft,
+  so it adds little and is optional.
+- **Single lift-motor failure in hover cannot be survived** (true of every quad). Hover low and briefly.

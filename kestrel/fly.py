@@ -45,19 +45,24 @@ MISSIONS = {
             + [("WP", -150, 0, 40), ("LAND_VTOL", 0, 0, 0)],
     "hover": [("TAKEOFF_VTOL", 0, 0, 20), ("LOITER_TIME_VTOL", 0, 0, 20), ("LAND_VTOL", 0, 0, 0)],
     # endurance: 400 m racetrack laps until the battery failsafe sends it home (RTL -> VTOL land)
-    "endurance": [("TAKEOFF_VTOL", 0, 0, 30)] + [("WP", n, e, 60) for _ in range(40) for n, e in ((400, 0), (400, 200), (0, 200), (0, 0))]
-                 + [("LAND_VTOL", 0, 0, 0)],
+    # (DO_JUMP keeps the mission at 8 items: a 160-item upload took long enough in SITL to fail)
+    "endurance": [("TAKEOFF_VTOL", 0, 0, 30), ("WP", 400, 0, 60), ("WP", 400, 200, 60), ("WP", 0, 200, 60), ("WP", 0, 0, 60),
+                  ("JUMP", 2, 60, 0), ("LAND_VTOL", 0, 0, 0)],
 }
 
 
 class Run:
     def __init__(self, mission="basic", instance=0, speedup=10, wind=(0.0, 0.0, 0.0), gust=0.0, seed=0,
-                 disp: Dispersion | None = None, name=None, timeout_s=900, rc_loss_at=None, extra_params=None, verbose=True):
+                 disp: Dispersion | None = None, name=None, timeout_s=900, rc_loss_at=None, extra_params=None, verbose=True,
+                 airspeed_sensor=False):
         self.mission, self.inst, self.speedup = mission, instance, speedup
         self.wind, self.gust, self.seed, self.disp = wind, gust, seed, disp
         self.name = name or f"{mission}_i{instance}"
         self.timeout_s, self.rc_loss_at, self.extra = timeout_s, rc_loss_at, extra_params or {}
         self.verbose = verbose
+        self.airspeed_sensor = airspeed_sensor
+        if airspeed_sensor:   # the optional ~$15 pitot (PLAN decision): SITL sensor fed from our physics
+            self.extra = {"ARSPD_TYPE": 100, "ARSPD_USE": 1, **self.extra}
         self.events = []
 
     def log(self, *a):
@@ -78,13 +83,17 @@ class Run:
                 continue
             i = req.seq
             c, dn, de, alt = seq[i]
-            lat, lon = offset(lat0, lon0, dn, de)
+            lat, lon = offset(lat0, lon0, dn, de) if c != "JUMP" else (0.0, 0.0)
             p1 = 20 if c == "LOITER_TIME_VTOL" else 0
             if c == "LOITER_TIME_VTOL":
                 # loiter in VTOL: precede with DO_VTOL_TRANSITION is not needed when already hovering after takeoff
                 pass
-            m.mav.mission_item_int_send(m.target_system, m.target_component, i, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,
-                                        cmds[c], 0, 1, p1, 0, 0, 0, int(lat * 1e7), int(lon * 1e7), alt, 0)
+            if c == "JUMP":   # (JUMP, target seq, repeat count, -)
+                m.mav.mission_item_int_send(m.target_system, m.target_component, i, mavutil.mavlink.MAV_FRAME_MISSION,
+                                            mavutil.mavlink.MAV_CMD_DO_JUMP, 0, 1, dn, de, 0, 0, 0, 0, 0, 0)
+            else:
+                m.mav.mission_item_int_send(m.target_system, m.target_component, i, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,
+                                            cmds[c], 0, 1, p1, 0, 0, 0, int(lat * 1e7), int(lon * 1e7), alt, 0)
             sent = max(sent, i + 1)
         ack = m.recv_match(type="MISSION_ACK", blocking=True, timeout=5)
         return ack is not None and ack.type == 0
@@ -97,10 +106,12 @@ class Run:
         RUNS.mkdir(parents=True, exist_ok=True)
         wd = Path(tempfile.mkdtemp(prefix=f"kestrel_sitl_{self.inst}_"))
         bridge = Bridge(instance=self.inst, disp=self.disp, wind_ned=self.wind, gust_sigma=self.gust, seed=self.seed,
-                        log_path=str(RUNS / f"{self.name}.csv")).start()
+                        log_path=str(RUNS / f"{self.name}.csv"), airspeed_sensor=self.airspeed_sensor).start()
         home = ",".join(str(x) for x in HOME)
         parm = wd / "kestrel.parm"
-        txt = PARM.read_text() + "".join(f"\n{k} {v}" for k, v in self.extra.items()) + "\n"
+        # SITL-only: no simulated gyro drift (it builds up during long mission uploads and blocks arming
+        # with "Gyros inconsistent"); the flight parameter file itself stays untouched
+        txt = PARM.read_text() + "\nSIM_DRIFT_SPEED 0\nSIM_DRIFT_TIME 0" + "".join(f"\n{k} {v}" for k, v in self.extra.items()) + "\n"
         parm.write_text(txt)
         cmd = [str(BIN), "--model", "JSON:127.0.0.1", "--speedup", str(self.speedup), "-I", str(self.inst),
                "--home", home, "--defaults", str(parm), "--wipe"]
@@ -157,6 +168,7 @@ class Run:
         m.mav.rc_channels_override_send(m.target_system, m.target_component, 1500, 1500, 1000, 1500, 0, 0, 0, 0)
         m.set_mode("QLOITER")
         armed = False
+        prearm = ""
         t0 = time.time()
         while not armed and time.time() - t0 < 180:
             m.mav.rc_channels_override_send(m.target_system, m.target_component, 1500, 1500, 1000, 1500, 0, 0, 0, 0)
@@ -165,10 +177,10 @@ class Run:
             if hb and hb.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED:
                 armed = True
             st = m.recv_match(type="STATUSTEXT", blocking=False)
-            if st and "PreArm" in st.text and time.time() - t0 > 170:
-                self.log(st.text)
+            if st and "rm" in st.text:   # PreArm: / Arm: refusals
+                prearm = st.text
         if not armed:
-            return {"error": "could not arm"}
+            return {"error": f"could not arm ({prearm})"}
         self.log("armed")
         m.set_mode("AUTO")
         sim_t0 = bridge.v.time

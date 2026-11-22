@@ -56,19 +56,25 @@ Q_A_ACCEL_Y_MAX 9000
 # --- transitions ---
 Q_TRANSITION_MS 6000
 Q_ASSIST_SPEED 10        # lift motors help below 10 m/s (trimmed stall 9.6); 11 tripped on synthetic-airspeed noise in wind
+Q_ASSIST_ALT 15          # lift motors also help below 15 m in plane modes (e.g. a stuck elevon sinking the wing)
 Q_ASSIST_DELAY 1.0       # synthetic airspeed is noisy without a sensor: require 1 s below threshold
 Q_WVANE_ENABLE 1         # VTOL: yaw nose into wind; a flying wing side-on to 10 m/s wind saturated a lift motor
 Q_WVANE_GAIN 1
+Q_FWD_THR_USE 1          # hold position against wind with the pusher, not by pitching nose down: a nose-down
+Q_FWD_THR_GAIN 1.5       #  flying wing makes downforce (10 m/s wind: alpha -27 deg, lift motors at 90 %). AUW / pusher thrust
+Q_FWD_PIT_LIM 3
 Q_TRAN_PIT_MAX 3
 Q_BACKTRANS_MS 3000
-Q_TRANS_FAIL 20          # transition not finished in 20 s (e.g. dead pusher) -> give up and fly home as a quad
+Q_TRANS_FAIL 45          # transition not finished in 45 s (dead pusher) -> fly home as a quad; 20 s fired in a 10 m/s crosswind
 Q_TRANS_FAIL_ACT 1       # QRTL
 Q_RTL_MODE 1             # RTL transitions to VTOL land at home
 Q_GUIDED_MODE 1
 # --- battery ---
 BATT_MONITOR 4
 BATT_CAPACITY 2200
-BATT_LOW_VOLT 10.5
+BATT_LOW_VOLT 10.5       # backstop only: under cruise load a 3S pack holds >10.5 V until ~96 % used (SITL endurance run)
+BATT_LOW_MAH 660         # 30 % reserve left -> RTL. Gives ~18 min flights landing with ~20 % (endurance suite)
+BATT_CRT_MAH 330         # 15 % left -> QLAND where it is
 BATT_FS_LOW_ACT 1        # RTL (QRTL with Q_RTL_MODE)
 BATT_CRT_VOLT 9.9        # 3.3 V/cell under load
 BATT_FS_CRT_ACT 4        # QLAND where it is: a pack this low cannot be trusted to get home

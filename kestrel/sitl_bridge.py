@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import csv
 import json
+from pathlib import Path
 import math
 import socket
 import struct
@@ -27,8 +28,9 @@ PKT32 = struct.Struct("<HHI32H")
 
 class Bridge:
     def __init__(self, instance=0, disp: Dispersion | None = None, wind_ned=(0, 0, 0), gust_sigma=0.0, seed=0,
-                 log_path=None, log_hz=25.0, rc_fail_at=None):
+                 log_path=None, log_hz=25.0, rc_fail_at=None, airspeed_sensor=False):
         self.s = S.load()
+        self.airspeed_sensor = airspeed_sensor   # send true pitot airspeed (option: ~$15 sensor, ARSPD_TYPE 100 in SITL)
         self.port = 9002 + 10 * instance
         self.disp = disp
         self.wind, self.gust, self.seed = wind_ned, gust_sigma, seed
@@ -97,7 +99,7 @@ class Bridge:
             self.rows.append([round(v.time, 3), *[round(x, 3) for x in v.pos], *[round(x, 3) for x in v.vel],
                               round(math.degrees(r), 2), round(math.degrees(p), 2), round(math.degrees(y), 2),
                               round(V, 2), round(math.degrees(math.atan2(vb[2], vb[0])), 2) if V > 1 else 0.0,
-                              *[round(d, 3) for d in duties], round(math.degrees(elev[0]), 2), round(math.degrees(elev[1]), 2),
+                              *[round(d, 3) for d in duties], round(math.degrees(v.elevon[0]), 2), round(math.degrees(v.elevon[1]), 2),
                               round(v.v_batt, 2), round(v.i_batt, 2), int(v.on_ground), int(v.crashed)])
         self.reply(addr)
 
@@ -111,6 +113,8 @@ class Bridge:
             "velocity": list(v.vel),
             "battery": {"voltage": v.v_batt, "current": v.i_batt},
         }
+        if self.airspeed_sensor:
+            msg["airspeed"] = max(0.0, v.airspeed_body()[0])   # pitot sees the forward component
         self.sock.sendto((json.dumps(msg) + "\n").encode(), addr)
 
     def loop(self):
@@ -136,8 +140,10 @@ class Bridge:
             self.thread.join(timeout=2)
         self.sock.close()
         if self.log_path and self.rows:
+            Path(self.log_path).parent.mkdir(parents=True, exist_ok=True)
             with open(self.log_path, "w", newline="") as f:
                 w = csv.writer(f)
+                # elevon columns are the actual surface angles (after servo lag and any stuck-servo fault)
                 w.writerow(["t", "n", "e", "d", "vn", "ve", "vd", "roll", "pitch", "yaw", "airspeed", "alpha",
                             "m1", "m2", "m3", "m4", "pusher", "elev_l", "elev_r", "vbatt", "ibatt", "ground", "crashed"])
                 w.writerows(self.rows)

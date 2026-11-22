@@ -122,12 +122,18 @@ def main():
     ap.add_argument("--n", type=int, default=60)
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--only", default=None, help="run only cases whose name contains this text")
+    ap.add_argument("--airspeed-sensor", action="store_true", help="fit the optional pitot sensor (results go to <suite>_pitot)")
     a = ap.parse_args()
     js = {"wind": wind_suite, "faults": fault_suite, "endurance": endurance_suite}.get(a.suite)
     jl = js() if js else mc_suite(a.n)
     if a.only:
         jl = [j for j in jl if a.only in j["name"]]
-    run_suite(a.suite, jl, a.jobs)
+    name = a.suite
+    if a.airspeed_sensor:
+        for j in jl:
+            j["airspeed_sensor"] = True
+        name += "_pitot"
+    run_suite(name, jl, a.jobs)
 
 
 if __name__ == "__main__":

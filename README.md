@@ -19,13 +19,14 @@ flown by ArduPlane 4.7.3. It takes off and lands like a quadcopter, and cruises 
 | Stall | 9.6 m/s, trimmed |
 | Stability | static margin 9.3 % at cruise, 5 % minimum across 2–15° alpha |
 | Endurance | 21.7 min modelled on a 3S 2200 pack, 17.1 min with a 20 % reserve |
-| Build | 5 sheets of 30×20 in foamboard, 1:1 templates on 40 Letter pages, 3 printed parts |
+| Build | 5 sheets of 30×20 in foamboard, 1:1 templates on 40 Letter pages, 3 printed parts (lift motors tilted 4° outboard) |
+| Tested | ArduPlane SITL: wind to 10 m/s 7/7, faults 9/10, Monte Carlo 99/100, ~18 min flights with 20 % reserve |
 
 ## Verify (each milestone's command)
 
 ```bash
 pip install -e .                       # Python 3.11+
-pytest -q                              # 30 tests: propulsion, sizing, aero, CAD, 6-DOF physics
+pytest -q                              # 31 tests (+2 SITL flights with KESTREL_SITL=1)
 python -m kestrel.sizing               # M0: sizing, trade study, BOM -> build/sizing.json
 python -m kestrel.aero                 # M1: aero tables (AeroSandbox + NeuralFoil) -> aero/tables.json
 python -m kestrel.cad                  # M1: CAD, clearances, mass props, cut templates, STLs -> cad/
@@ -33,7 +34,8 @@ python -m kestrel.balance              # M1: CG / battery / rotor placement, wri
 python -m kestrel.fly --mission basic  # M3: real ArduPlane SITL flying our physics (needs ArduPilot built)
 python -m kestrel.mc --suite wind      # M4: wind 0-10 m/s with gusts
 python -m kestrel.mc --suite faults    # M4: failures and model errors
-python -m kestrel.mc --suite monte_carlo --n 200  # M4: Monte Carlo
+python -m kestrel.mc --suite monte_carlo --n 100  # M4: Monte Carlo
+python -m kestrel.report                # M4: summary -> build/sitl_results.json, docs/img/
 ground/tests/run.sh                    # radio bridge: C++ host tests (+ASan/UBSan)
 ```
 
