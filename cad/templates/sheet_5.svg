@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="762.0mm" height="508.0mm" viewBox="0 0 762.0 508.0">
+<rect x="0" y="0" width="762.0" height="508.0" fill="none" stroke="#999" stroke-width="0.5"/>
+<text x="10" y="500.0" font-size="8">Kestrel foam sheet 5/5 - 762 x 508 mm (30 x 20 in) - print at 100 %</text>
+<rect x="10" y="10" width="50" height="50" fill="none" stroke="#000" stroke-width="0.4"/><text x="12" y="38" font-size="5">50 mm check</text>
+<polygon points="5.00,503.00 145.00,503.00 145.00,403.00 61.00,403.00 5.00,503.00" fill="none" stroke="#000" stroke-width="0.4"/>
+<text x="87.8" y="457.2" font-size="7" text-anchor="middle">winglet_left</text>
+<polygon points="153.00,503.00 293.00,503.00 293.00,403.00 209.00,403.00 153.00,503.00" fill="none" stroke="#000" stroke-width="0.4"/>
+<text x="235.8" y="457.2" font-size="7" text-anchor="middle">winglet_right</text>
+<polygon points="5.00,395.00 525.00,395.00 525.00,335.00 5.00,335.00 5.00,395.00" fill="none" stroke="#000" stroke-width="0.4"/>
+<text x="265.0" y="365.0" font-size="7" text-anchor="middle">pod_side_left</text>
+<polygon points="5.00,327.00 525.00,327.00 525.00,267.00 5.00,267.00 5.00,327.00" fill="none" stroke="#000" stroke-width="0.4"/>
+<text x="265.0" y="297.0" font-size="7" text-anchor="middle">pod_side_right</text>
+<polygon points="5.00,259.00 525.00,259.00 525.00,199.00 5.00,199.00 5.00,259.00" fill="none" stroke="#000" stroke-width="0.4"/>
+<text x="265.0" y="229.0" font-size="7" text-anchor="middle">pod_top_hatch</text>
+<polyline points="25.00,259.00 25.00,199.00" fill="none" stroke="#c00" stroke-width="0.4" stroke-dasharray="4,3"><title>hatch cut</title></polyline>
+<polygon points="5.00,191.00 525.00,191.00 525.00,131.00 5.00,131.00 5.00,191.00" fill="none" stroke="#000" stroke-width="0.4"/>
+<text x="265.0" y="161.0" font-size="7" text-anchor="middle">pod_bottom</text>
+</svg>

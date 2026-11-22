@@ -1,0 +1,196 @@
+{
+  "result": {
+    "mass_kg": 1.0383070153308647,
+    "cg": [
+      -0.1677122811029929,
+      5.8483033282127695e-18,
+      0.00477444407513365
+    ],
+    "mass_source": "cad",
+    "weight_n": 10.182313491894423,
+    "lift": {
+      "motor": "a2212_1000kv",
+      "prop": "prop_10x45",
+      "full_thrust_each_n": 7.103661007749556,
+      "full_current_each_a": 9.96661001360442,
+      "tw_nominal": 2.7905882149098584,
+      "tw_empty_pack": 2.5150684706089517,
+      "hover_throttle": 0.48956399144117696,
+      "hover_current_each_a": 3.8923349928277036,
+      "hover_rpm": 4224.684435451136,
+      "hover_power_w": 86.45587428271327,
+      "pack_v_full_throttle": 10.047341055724118
+    },
+    "cruise": {
+      "v_mps": 14.0,
+      "cl": 0.3141380440833116,
+      "ld": 6.677724667232085,
+      "drag_n": 1.524817808356119,
+      "pusher_throttle": 0.6440498168730644,
+      "power_w": 51.415156136790486,
+      "pusher_current_a": 6.835345608637451,
+      "pusher_static_thrust_n": 6.954527588065425,
+      "pusher_thrust_at_cruise_full_n": 4.099087736141326,
+      "excess_thrust_ratio": 2.6882475491025937
+    },
+    "best_endurance": {
+      "v": 11.5,
+      "drag": 1.3348743367513654,
+      "cl": 0.46556564567356573,
+      "ld": 7.627919131829851,
+      "p": 38.44562158785241,
+      "wh_per_km": 0.9286382026051305
+    },
+    "best_range": {
+      "v": 11.5,
+      "drag": 1.3348743367513654,
+      "cl": 0.46556564567356573,
+      "ld": 7.627919131829851,
+      "p": 38.44562158785241,
+      "wh_per_km": 0.9286382026051305
+    },
+    "battery": {
+      "usable_wh": 19.800000000000004,
+      "hover_wh": 2.881862476090442
+    },
+    "endurance_min": 21.742977123981152,
+    "endurance_with_reserve_min": 17.12177166915645,
+    "hover_only_min": 13.74111371675226,
+    "stall_mps": 9.573923014337621,
+    "clmax": 0.6717330937647014,
+    "drag_buildup": {
+      "wing_profile": 0.00405,
+      "winglets": 0.0003360000000000001,
+      "fuselage_pod": 0.0010448000000000002,
+      "booms": 0.00033929200658769766,
+      "lift_motors_stopped_props": 0.0048256,
+      "total": 0.010595692006587698
+    },
+    "aero_source": "tables",
+    "esc_ok": true,
+    "motor_current_ok": true
+  },
+  "checks": {
+    "hover_tw>=target": true,
+    "hover_tw_empty>=1.6": true,
+    "hover_throttle<=0.6": true,
+    "endurance_reserve>=min": true,
+    "stall<=max": true,
+    "pusher_excess_thrust>=2": true,
+    "esc_current_ok": true,
+    "motor_current_ok": true,
+    "aircraft_bom<=max": true
+  },
+  "bom": {
+    "aircraft": [
+      177,
+      240
+    ],
+    "ground": [
+      28,
+      52
+    ],
+    "total": [
+      205,
+      292
+    ]
+  },
+  "trade": [
+    {
+      "lift": "a2212_1000kv+prop_10x45",
+      "tw": 2.7905882149098584,
+      "tw_empty": 2.5150684706089517,
+      "hover_w": 86.45587428271327,
+      "full_a": 9.96661001360442,
+      "esc_ok": true,
+      "motor_ok": true
+    },
+    {
+      "lift": "a2212_1000kv+prop_9x45",
+      "tw": 2.292966177046429,
+      "tw_empty": 2.051541286504974,
+      "hover_w": 94.67078569095752,
+      "full_a": 7.617738621647803,
+      "esc_ok": true,
+      "motor_ok": true
+    },
+    {
+      "lift": "a2212_1000kv+prop_8x6",
+      "tw": 1.722583781441496,
+      "tw_empty": 1.5377330246959258,
+      "hover_w": 131.7846723754959,
+      "full_a": 6.949179243788747,
+      "esc_ok": true,
+      "motor_ok": true
+    },
+    {
+      "lift": "a2212_1400kv+prop_10x45",
+      "tw": 3.3798464126672867,
+      "tw_empty": 3.0743341194912106,
+      "hover_w": 94.40673633143481,
+      "full_a": 16.751799693380605,
+      "esc_ok": true,
+      "motor_ok": true
+    },
+    {
+      "lift": "a2212_1400kv+prop_9x45",
+      "tw": 3.0002178242247752,
+      "tw_empty": 2.7118171067637853,
+      "hover_w": 101.48792885996292,
+      "full_a": 13.738427296684758,
+      "esc_ok": true,
+      "motor_ok": true
+    },
+    {
+      "lift": "a2212_1400kv+prop_8x6",
+      "tw": 2.3108799153343234,
+      "tw_empty": 2.084339926932583,
+      "hover_w": 141.23669850526073,
+      "full_a": 12.812380555067936,
+      "esc_ok": true,
+      "motor_ok": true
+    },
+    {
+      "pusher": "a2212_1000kv+prop_9x6",
+      "cruise_w": 53.92895575144757,
+      "excess": 1.8665705291167187,
+      "static_n": 6.125991383700829,
+      "endurance_min": 20.822694363172914
+    },
+    {
+      "pusher": "a2212_1000kv+prop_8x6",
+      "cruise_w": 48.28760712350137,
+      "excess": 1.5669579227673183,
+      "static_n": 4.827990213293141,
+      "endurance_min": 23.021713683976166
+    },
+    {
+      "pusher": "a2212_1000kv+prop_9x45",
+      "cruise_w": 57.919566066246574,
+      "excess": 1.427257831114895,
+      "static_n": 6.475531008180281,
+      "endurance_min": 19.525826251418177
+    },
+    {
+      "pusher": "a2212_1400kv+prop_9x6",
+      "cruise_w": 58.42303144942785,
+      "excess": 2.966406392321361,
+      "static_n": 8.224153917724854,
+      "endurance_min": 19.374795970887856
+    },
+    {
+      "pusher": "a2212_1400kv+prop_8x6",
+      "cruise_w": 51.415156136790486,
+      "excess": 2.6882475491025937,
+      "static_n": 6.954527588065425,
+      "endurance_min": 21.742977123981152
+    },
+    {
+      "pusher": "a2212_1400kv+prop_9x45",
+      "cruise_w": 61.941179819113195,
+      "excess": 2.7342215028533507,
+      "static_n": 9.1126178071534,
+      "endurance_min": 18.387938595921735
+    }
+  ]
+}

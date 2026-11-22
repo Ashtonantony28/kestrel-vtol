@@ -1,0 +1,8 @@
+[project]
+name = "kestrel-vtol"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["numpy", "scipy", "pyyaml", "aerosandbox==4.2.10", "build123d==0.13.0", "shapely", "reportlab", "pymavlink", "matplotlib", "pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

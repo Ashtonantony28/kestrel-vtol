@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="762.0mm" height="508.0mm" viewBox="0 0 762.0 508.0">
+<rect x="0" y="0" width="762.0" height="508.0" fill="none" stroke="#999" stroke-width="0.5"/>
+<text x="10" y="500.0" font-size="8">Kestrel foam sheet 3/5 - 762 x 508 mm (30 x 20 in) - print at 100 %</text>
+<rect x="10" y="10" width="50" height="50" fill="none" stroke="#000" stroke-width="0.4"/><text x="12" y="38" font-size="5">50 mm check</text>
+<polygon points="5.00,253.00 653.30,253.00 747.46,503.00 200.46,503.00 5.00,253.00" fill="none" stroke="#000" stroke-width="0.4"/>
+<text x="399.5" y="374.5" font-size="7" text-anchor="middle">wing_right_inner</text>
+<polyline points="332.19,253.00 476.52,503.00" fill="none" stroke="#c00" stroke-width="0.4" stroke-dasharray="4,3"><title>fold (LE, score inside)</title></polyline>
+<polyline points="412.46,253.00 544.26,503.00" fill="none" stroke="#c00" stroke-width="0.4" stroke-dasharray="4,3"><title>spar line</title></polyline>
+<polyline points="626.37,378.00 679.73,503.00" fill="none" stroke="#c00" stroke-width="0.4" stroke-dasharray="4,3"><title>elevon hinge (cut top skin only)</title></polyline>
+<polyline points="626.37,378.00 700.38,378.00" fill="none" stroke="#c00" stroke-width="0.4" stroke-dasharray="4,3"><title>elevon end cut</title></polyline>
+</svg>
