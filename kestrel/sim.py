@@ -202,7 +202,12 @@ class Vehicle:
         frac = max(0.0, 1.0 - self.soc_c / self.cap_c)
         b = self.batt
         # simple LiPo curve: steep at ends, near-linear plateau
-        v_cell = b.v_cell_empty + (b.v_cell_full - b.v_cell_empty) * (0.15 * frac + 0.85 * frac ** 0.6) if frac > 0 else 3.0
+        if frac > 0:
+            v_cell = b.v_cell_empty + (b.v_cell_full - b.v_cell_empty) * (0.15 * frac + 0.85 * frac ** 0.6)
+        else:
+            # past rated capacity the pack collapses (and the ESCs cut out): 3.0 V/cell falling to 0 within 10 %
+            over = self.soc_c / self.cap_c - 1.0
+            v_cell = max(0.0, 3.0 - 30.0 * over)
         if frac < 0.05:
             v_cell -= (0.05 - frac) * 8.0
         return b.cells * v_cell

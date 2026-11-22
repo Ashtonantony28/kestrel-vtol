@@ -6,3 +6,4 @@ dependencies = ["numpy", "scipy", "pyyaml", "aerosandbox==4.2.10", "build123d==0
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]

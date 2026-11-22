@@ -1,0 +1,83 @@
+# Kestrel lean quadplane (1.0 m flying wing, 4+1) - ArduPlane 4.7 parameters.
+# Tuned in SITL against kestrel/sim.py (python -m sitl.fly). These are the parameters to flash on the real
+# SpeedyBee F405 Wing Mini, after bench checks (build/BENCH.md). Comments give the reason for non-defaults.
+# --- frame ---
+Q_ENABLE 1
+Q_FRAME_CLASS 1          # quad
+Q_FRAME_TYPE 1           # X; motors 1 FR CCW, 2 RL CCW, 3 FL CW, 4 RR CW
+SERVO1_FUNCTION 77       # elevon left
+SERVO2_FUNCTION 78       # elevon right
+SERVO3_FUNCTION 70       # pusher throttle
+SERVO4_FUNCTION 0
+SERVO5_FUNCTION 33
+SERVO6_FUNCTION 34
+SERVO7_FUNCTION 35
+SERVO8_FUNCTION 36
+SERVO1_MIN 1000
+SERVO1_MAX 2000
+SERVO1_TRIM 1500
+SERVO2_MIN 1000
+SERVO2_MAX 2000
+SERVO2_TRIM 1500
+MIXING_GAIN 0.5
+SERVO3_MIN 1000         # pusher ESC calibrated 1000-2000 us (default 1100 would idle the pusher at 10 %)
+SERVO3_TRIM 1000
+SERVO3_MAX 2000
+# --- airspeed: no sensor (synthetic airspeed from GPS + wind estimate) ---
+ARSPD_TYPE 0
+ARSPD_USE 0
+AIRSPEED_MIN 12          # trimmed stall 9.6 m/s (aero/tables.json) x 1.25
+AIRSPEED_CRUISE 14
+AIRSPEED_MAX 20
+TRIM_THROTTLE 64         # pusher duty at 14 m/s cruise (build/sizing.json)
+THR_MAX 100
+PTCH_TRIM_DEG 6          # cruise trim alpha ~7 deg in level flight
+# --- VTOL motors ---
+Q_M_PWM_TYPE 0
+Q_M_PWM_MIN 1000
+Q_M_PWM_MAX 2000
+Q_M_SPIN_ARM 0.08
+Q_M_SPIN_MIN 0.12
+Q_M_THST_HOVER 0.49      # sizing: hover duty 49 %
+Q_M_HOVER_LEARN 2
+Q_M_THST_EXPO 0.55
+Q_M_BAT_VOLT_MAX 12.6
+Q_M_BAT_VOLT_MIN 10.5
+# --- VTOL attitude control (inertia ~0.04 kg m^2 roll/pitch, 0.08 yaw) ---
+Q_A_RAT_RLL_P 0.20
+Q_A_RAT_RLL_I 0.20
+Q_A_RAT_RLL_D 0.006
+Q_A_RAT_PIT_P 0.20
+Q_A_RAT_PIT_I 0.20
+Q_A_RAT_PIT_D 0.006
+Q_A_RAT_YAW_P 0.6
+Q_A_RAT_YAW_I 0.06
+Q_A_ACCEL_Y_MAX 9000
+# --- transitions ---
+Q_TRANSITION_MS 6000
+Q_ASSIST_SPEED 10        # lift motors help below 10 m/s (trimmed stall 9.6); 11 tripped on synthetic-airspeed noise in wind
+Q_ASSIST_DELAY 1.0       # synthetic airspeed is noisy without a sensor: require 1 s below threshold
+Q_WVANE_ENABLE 1         # VTOL: yaw nose into wind; a flying wing side-on to 10 m/s wind saturated a lift motor
+Q_WVANE_GAIN 1
+Q_TRAN_PIT_MAX 3
+Q_BACKTRANS_MS 3000
+Q_TRANS_FAIL 20          # transition not finished in 20 s (e.g. dead pusher) -> give up and fly home as a quad
+Q_TRANS_FAIL_ACT 1       # QRTL
+Q_RTL_MODE 1             # RTL transitions to VTOL land at home
+Q_GUIDED_MODE 1
+# --- battery ---
+BATT_MONITOR 4
+BATT_CAPACITY 2200
+BATT_LOW_VOLT 10.5
+BATT_FS_LOW_ACT 1        # RTL (QRTL with Q_RTL_MODE)
+BATT_CRT_VOLT 9.9        # 3.3 V/cell under load
+BATT_FS_CRT_ACT 4        # QLAND where it is: a pack this low cannot be trusted to get home
+# --- failsafe ---
+FS_SHORT_ACTN 0
+FS_LONG_ACTN 1           # RTL on RC loss
+FS_LONG_TIMEOUT 5
+THR_FAILSAFE 1
+# --- misc ---
+RTL_RADIUS 60
+WP_RADIUS 30
+LOG_DISARMED 0

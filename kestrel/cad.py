@@ -353,6 +353,8 @@ def nest(parts):
 
 def write_templates(sheets):
     TPL.mkdir(parents=True, exist_ok=True)
+    for old in TPL.glob("sheet_*.svg"):   # a re-nest with fewer sheets must not leave stale templates behind
+        old.unlink()
     for i, sh in enumerate(sheets, 1):
         W, H = SHEET
         out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}mm" height="{H}mm" viewBox="0 0 {W} {H}">',
