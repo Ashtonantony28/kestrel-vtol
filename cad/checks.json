@@ -2,26 +2,31 @@
  "prop_collisions": [],
  "disc_wing_overlap_frac": {
   "FR": 0.0,
-  "RL": 0.06645204777820815,
+  "RL": 0.06950014081999238,
   "FL": 0.0,
-  "RR": 0.06645204777820819
+  "RR": 0.06950014081999224
  },
  "ground_z": -0.097,
  "pusher_tip_clearance_m": 0.0355,
  "pod_clearance_m": 0.047,
  "battery_in_pod": true,
  "pusher_wing_distance_m": 0.05087783276030668,
- "battery_x_for_target_sm": -0.03534890418306853,
- "cg_target_frd_x": -0.16759627232682767,
- "static_margin_cad": 0.09299523536671803,
- "static_margin_min_local_cad": 0.049575193902830675,
- "mass_cad_kg": 1.0383070153308647,
+ "spar_inside_frac": {
+  "cross_spar": 1.0,
+  "outer_spar_L": 1.0,
+  "outer_spar_R": 1.0
+ },
+ "battery_x_for_target_sm": -0.01993742412119726,
+ "cg_target_frd_x": -0.16748193050677515,
+ "static_margin_cad": 0.0943320996425384,
+ "static_margin_min_local_cad": 0.05060167965385572,
+ "mass_cad_kg": 1.0554615654757582,
  "mass_budget_kg": 1.054,
- "mass_error_frac": -0.014888979761987997,
+ "mass_error_frac": 0.0013866845121044413,
  "cg_frd": [
-  -0.1677122811029929,
-  5.8483033282127695e-18,
-  0.00477444407513365
+  -0.16731761996426542,
+  7.396818704548348e-18,
+  0.004481411178659581
  ],
  "sheets": 5,
  "sheets_fit": true,

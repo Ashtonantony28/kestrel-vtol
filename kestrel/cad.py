@@ -119,14 +119,38 @@ def build(s=None):
     z_prop = -lr["z"]          # FRD z -> FLU
     rotors = {"FR": (lr["x_front"], -lr["y"]), "RL": (lr["x_rear"], lr["y"]),
               "FL": (lr["x_front"], lr["y"]), "RR": (lr["x_rear"], -lr["y"])}
+    tilt = lr.get("yaw_tilt_deg", 0.0)
     for k, (x, y) in rotors.items():
-        parts[f"motor_{k}"] = bd.Cylinder(0.014, 0.026).translate((x, y, z_boom + 0.005 + 0.013))
-        parts[f"mount_{k}"] = bd.Box(0.034, 0.034, 0.006).translate((x, y, z_boom + 0.008))
+        # yaw tilt: every motor leans outboard about its boom (FLU: right side y < 0 -> +tilt about +X), ADR 0004
+        ax = bd.Axis((x, y, z_boom), (1, 0, 0))
+        ang = tilt if y < 0 else -tilt
+        parts[f"motor_{k}"] = bd.Cylinder(0.014, 0.026).translate((x, y, z_boom + 0.005 + 0.013)).rotate(ax, ang)
+        parts[f"mount_{k}"] = bd.Box(0.034, 0.034, 0.006).translate((x, y, z_boom + 0.008)).rotate(ax, ang)
         parts[f"leg_{k}"] = bd.Box(0.012, 0.012, lg["height"]).translate((x, y, z_boom - lg["height"] / 2))
-        parts[f"propdisc_{k}"] = bd.Cylinder(lp["d"] / 2, 0.012).translate((x, y, z_prop))
+        parts[f"propdisc_{k}"] = bd.Cylinder(lp["d"] / 2, 0.012).translate((x, y, z_prop)).rotate(ax, ang)
     zpu = -pu["z"]
     parts["pusher_motor"] = cyl_x(0.014, 0.026, (pu["x"] + 0.02, 0, zpu))
     parts["propdisc_pusher"] = cyl_x(pp["d"] / 2, 0.012, (pu["x"] - 0.005, 0, zpu))
+    # spars (spec structure): straight cross spar through the pod joining the booms, swept outer spars
+    st = s["structure"]
+    cs = st["cross_spar"]
+    tube = bd.Cylinder(cs["od"] / 2, cs["span"], rotation=(90, 0, 0)) - bd.Cylinder(cs["id"] / 2, cs["span"], rotation=(90, 0, 0))
+    parts["cross_spar"] = tube.translate((-cs["x_aft"], 0, cs["z"]))
+    os_ = st["outer_spar"]
+    w = s["wing"]
+    b2, tsw = w["span"] / 2, math.tan(math.radians(w["le_sweep_deg"]))
+    def qc(y):   # quarter-chord point (FLU), mid-height of the section
+        c = w["root_chord"] + (w["tip_chord"] - w["root_chord"]) * y / b2
+        return (-(y * tsw + 0.25 * c), y, 0.035 * c)
+    for side, sy in (("L", 1), ("R", -1)):
+        p0, p1 = qc(os_["y0"]), qc(os_["y1"])
+        p0, p1 = (p0[0], sy * p0[1], p0[2]), (p1[0], sy * p1[1], p1[2])
+        L = math.dist(p0, p1)
+        d = bd.Vector(*(b - a for a, b in zip(p0, p1))).normalized()
+        pl = bd.Plane(origin=p0, z_dir=d)
+        t = pl * (bd.Cylinder(os_["od"] / 2, L, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+                  - bd.Cylinder(os_["id"] / 2, L, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN)))
+        parts[f"outer_spar_{side}"] = t
     for k, (m, size, c) in _items(s).items():
         parts[k] = bd.Box(*size).translate(c)
     return parts, rotors
@@ -183,6 +207,10 @@ def clearance_checks(s, parts):
     res["battery_in_pod"] = abs((parts["battery"] & pod_inner).volume - parts["battery"].volume) < 1e-9
     # pusher to trailing edge clearance (min distance)
     res["pusher_wing_distance_m"] = parts["propdisc_pusher"].distance_to(parts["wing_L"] + parts["wing_R"])
+    # spars must stay inside the wing (or the pod): fraction of each spar's volume enclosed
+    shell = parts["wing_L"] + parts["wing_R"] + parts["pod"]
+    res["spar_inside_frac"] = {k: (parts[k] & shell).volume / parts[k].volume
+                               for k in ("cross_spar", "outer_spar_L", "outer_spar_R")}
     return res
 
 
@@ -205,7 +233,9 @@ def mass_properties(s, parts):
         add(f"winglet_{side}", parts[f"winglet_{side}"].volume / FOAM_T * FOAM_AREAL, parts[f"winglet_{side}"])
     pod_sh = parts["pod"]
     add("pod", pod_sh.area * FOAM_AREAL * 1.15, pod_sh)
-    add("spar", 0.020, bd.Box(0.01, w["span"], 0.005).translate((-0.08, 0, 0)))
+    for k in ("cross_spar", "outer_spar_L", "outer_spar_R"):
+        add(k, parts[k].volume * CARBON, parts[k])
+    add("glue", 0.008, bd.Box(0.2, 0.6, 0.004).translate((-0.17, 0, 0.004)))
     for side in ("L", "R"):
         b = parts[f"boom_{side}"]
         add(f"boom_{side}", b.volume * CARBON, b)

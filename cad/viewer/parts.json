@@ -1,0 +1,101 @@
+{
+ "wing": {
+  "parts": [
+   "wing_L",
+   "wing_R"
+  ],
+  "bytes": 23684
+ },
+ "winglets": {
+  "parts": [
+   "winglet_L",
+   "winglet_R"
+  ],
+  "bytes": 1284
+ },
+ "pod": {
+  "parts": [
+   "pod"
+  ],
+  "bytes": 684
+ },
+ "booms": {
+  "parts": [
+   "boom_L",
+   "boom_R"
+  ],
+  "bytes": 40884
+ },
+ "spars": {
+  "parts": [
+   "cross_spar",
+   "outer_spar_L",
+   "outer_spar_R"
+  ],
+  "bytes": 61284
+ },
+ "motors": {
+  "parts": [
+   "motor_FR",
+   "motor_RL",
+   "motor_FL",
+   "motor_RR",
+   "pusher_motor"
+  ],
+  "bytes": 50084
+ },
+ "mounts": {
+  "parts": [
+   "mount_FR",
+   "mount_RL",
+   "mount_FL",
+   "mount_RR"
+  ],
+  "bytes": 2484
+ },
+ "legs": {
+  "parts": [
+   "leg_FR",
+   "leg_RL",
+   "leg_FL",
+   "leg_RR"
+  ],
+  "bytes": 2484
+ },
+ "props": {
+  "parts": [
+   "propdisc_FR",
+   "propdisc_RL",
+   "propdisc_FL",
+   "propdisc_RR",
+   "propdisc_pusher"
+  ],
+  "bytes": 50084
+ },
+ "battery": {
+  "parts": [
+   "battery"
+  ],
+  "bytes": 684
+ },
+ "avionics": {
+  "parts": [
+   "flight_controller",
+   "gps",
+   "receiver",
+   "pusher_esc",
+   "servos",
+   "wiring"
+  ],
+  "bytes": 3684
+ },
+ "_markers": {
+  "cg_mm": [
+   -167.31761996426542,
+   -7.396818704548348e-15,
+   -4.481411178659581
+  ],
+  "np_x_mm": -193.07843532343762,
+  "mass_kg": 1.0554615654757582
+ }
+}

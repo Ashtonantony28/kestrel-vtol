@@ -25,5 +25,8 @@ def test_hand_calc_hover_power(result):
 
 
 def test_bom_within_budget():
+    # Ceiling lives in spec/vehicle.yaml (limits.max_bom_usd): $240 until validation added the
+    # carbon spars (ADR 0005), now $250. Ground gear must stay under $60 on top of it.
     b = sizing.bom_totals()
-    assert b["aircraft"][1] <= 240 and b["total"][1] <= 300
+    lim = sizing.S.load()["limits"]["max_bom_usd"]
+    assert b["aircraft"][1] <= lim and b["total"][1] <= lim + 60

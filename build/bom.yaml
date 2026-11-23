@@ -2,6 +2,7 @@
 aircraft:
   - {item: "Dollar-store foamboard 20x30 in", qty: 5, low: 4, high: 6}
   - {item: "Carbon tube 10x8 mm x 1000 mm (booms, cut to 750 mm)", qty: 2, low: 10, high: 14}
+  - {item: "Carbon tube 8x6 mm x 500 mm (cross spar) + 6x4 mm x 500 mm (outer spars, cut 2x 220 mm)", qty: 1, low: 6, high: 10}
   - {item: "PETG/PLA printed parts incl. legs (~130 g)", qty: 1, low: 2, high: 4}
   - {item: "Hot glue, packing tape, control horns, linkages", qty: 1, low: 5, high: 8}
   - {item: "SG90-class 9 g servo (elevons)", qty: 2, low: 4, high: 6}

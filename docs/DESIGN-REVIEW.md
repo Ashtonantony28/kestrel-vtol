@@ -1,4 +1,4 @@
-# Kestrel design review (M0–M4 complete, 2026-11-22)
+# Kestrel design review (M0–M4 complete 2026-11-22; independent validation 2026-11-23)
 
 **Verdict:** the lean v2 design closes. On paper and in simulation it meets every sizing target. It flies
 ArduPlane 4.7.3 missions hands-off, with no airspeed sensor, in winds up to 10 m/s. It survives the
@@ -16,26 +16,27 @@ What simulation cannot prove is listed at the end. The bench checklist (`build/B
 | Sizing, BOM | own models, datasheet-fitted motor/prop | `python -m kestrel.sizing` | 9/9 checks pass |
 | Aero | AeroSandbox 4.2.10 AeroBuildup + NeuralFoil, trimmed alpha × elevon tables | `python -m kestrel.aero` | see §2 |
 | CAD | build123d: clearances, mass properties, nesting, 1:1 templates | `python -m kestrel.cad` | 5 sheets, no collisions, mass −1.5 % vs budget |
-| 6-DOF physics | own pure-Python model, analytic tests | `pytest -q` | 31 pass |
+| 6-DOF physics | own pure-Python model, analytic tests | `pytest -q` | 32 pass (+2 SITL) |
 | Flight software | **real ArduPlane 4.7.3** in SITL, lockstep JSON link to our physics | `KESTREL_SITL=1 pytest -q tests/test_sitl.py` | hover and full mission pass |
 | Robustness | wind, faults, endurance, Monte Carlo | `python -m kestrel.mc --suite …` then `python -m kestrel.report` | see §3 |
 | Radio bridge | C++ core host tests, ASan/UBSan, sketch type-check | `ground/tests/run.sh` | 2,276 checks pass |
+| Independent validation | vortex lattice, DATCOM, momentum theory, beam theory, time-step convergence, control authority | `python -m kestrel.validate` | 32/32 pass (§6) |
 
 ## 2. Design numbers (all derived from `spec/vehicle.yaml`)
 
 | | Value | Target |
 |---|---|---|
-| All-up weight (CAD) | 1.04 kg | ≤ 1.10 kg |
-| Hover T/W (full / empty pack) | 2.79 / 2.52 | ≥ 2.0 / 1.6 |
-| Hover throttle, power | 49 %, 86 W | ≤ 60 % |
-| Cruise | 14 m/s, L/D 6.7, 51 W, pusher 64 % | |
+| All-up weight (CAD) | 1.055 kg | ≤ 1.10 kg |
+| Hover T/W (full / empty pack) | 2.75 / 2.47 | ≥ 2.0 / 1.6 |
+| Hover throttle, power | 49 %, 88 W | ≤ 60 % |
+| Cruise | 14 m/s, L/D 6.6, 53 W, pusher 65 % | |
 | Pusher excess thrust at cruise | 2.7× | ≥ 2 |
-| Trimmed stall | 9.6 m/s (CLmax 0.67 trimmed) | ≤ 10.5 m/s |
-| Static margin | 9.3 % at cruise; 5.0 % minimum over 2–15° | 4–16 % |
+| Trimmed stall | 9.7 m/s (CLmax 0.67 trimmed) | ≤ 10.5 m/s |
+| Static margin | 9.4 % at cruise; 5.1 % minimum over 2–15° | 4–16 % |
 | Cruise trim | alpha 6.8°, elevon −1° | small elevon |
-| Endurance, model | 21.7 min to empty, 17.1 min with 20 % reserve | ≥ 12 min |
-| Endurance, SITL (mission flown until the reserve trigger, then RTL and land) | **18.3 min** nominal, **15.5 min** pessimistic (+25 % drag, +8 % mass, −5 % thrust, −10 % capacity), both landing with 20 % left | |
-| Aircraft / total cost | $177–240 / $205–292 | ≤ $240 aircraft |
+| Endurance, model | 21.2 min to empty, 16.7 min with 20 % reserve | ≥ 12 min |
+| Endurance, SITL (mission flown until the reserve trigger, then RTL and land) | **17.2 min** nominal, **15.1 min** pessimistic (rerun 2026-11-23 after the spar fix; 18.3 / 15.5 before) (+25 % drag, +8 % mass, −5 % thrust, −10 % capacity), both landing with 20 % left | |
+| Aircraft / total cost | $183–250 / $211–302 | ≤ $250 aircraft (was $240; ADR 0005) |
 
 ## 3. SITL results (final parameter file, `sitl/kestrel.parm`)
 
@@ -51,15 +52,15 @@ What simulation cannot prove is listed at the end. The bench checklist (`build/B
 | Left elevon stuck in cruise | pass | the lift motors catch the slow sink below 15 m |
 | CG ±10 mm, +15 % mass, −10 % thrust, +30 % drag, warped wing | 6/6 pass | |
 | Lift motor 1 fails in hover | **crash, as expected** | no quad survives this; see the operational mitigation |
-| Monte Carlo, 100 runs (wind 0–7 m/s, gusts 0–2 m/s, ±4 % mass, ±6 mm CG, ±12 % drag, lift/Cm/roll-trim errors, motor spread, battery resistance 0.8–1.6×) | **99/100 pass** | landing error: median 0.64 m, 95th percentile 2.1 m, 91 % within 2 m. Touchdown ≤ 0.77 m/s. `docs/img/monte_carlo.png` |
+| Monte Carlo, 100 runs (wind 0–7 m/s, gusts 0–2 m/s, ±4 % mass, ±6 mm CG, ±12 % drag, lift/Cm/roll-trim errors, motor spread, battery resistance 0.8–1.6×) | **99/100 pass** | rerun 2026-11-23: landing error median 0.67 m, 95th percentile 1.95 m (completed runs), 94 of 100 within 2 m. Touchdown median 0.51 m/s, max 0.87 m/s. `docs/img/monte_carlo.png` |
 
-The one Monte Carlo miss (run mc_049: 6 m/s wind, 1.7 m/s gusts) landed softly, at 0.33 m/s, but 28 m
-from the pad. During the final 6 m of descent, with the lift motors near idle, it drifted about 2 m/s.
-The likeliest cause is gust lift on the wing while the landing controller has little thrust to work
-with. It is an open item to look for in the first real landing logs (M6).
+The one Monte Carlo miss (rerun: mc_093, 1.75 m/s gusts) completed the mission without crashing but landed
+5.3 m from the pad at 1.5 m/s, after tilting up to 44° in the descent. The first run's miss (mc_049) was the
+same pattern: gusts on the wing during the last metres of descent, when the lift motors have little thrust
+in reserve. It is an open item to look for in the first real landing logs (M6).
 
-The plan's M4 target was "≥ 98 % complete and within 2 m". Completion is met (99 %), but the
-2 m accuracy is not quite: 91 % of runs, and 95 % land within 2.1 m.
+The plan's M4 target was "≥ 98 % complete and within 2 m". Both are now met: 99 % complete, and the 95th
+percentile landing error is 1.95 m (the first run, before the re-balance, reached 2.1 m).
 
 ## 4. Problems found and fixed (details in ADR 0004)
 
@@ -99,3 +100,27 @@ Along the way, the tests also caught bugs in our own tools:
 - **The M3 cross-check against SITL's built-in quadplane model was not done.** Running the same mission on that generic model would check the mission scripts, not this aircraft,
   so it adds little and is optional.
 - **Single lift-motor failure in hover cannot be survived** (true of every quad). Hover low and briefly.
+
+## 6. Independent validation (2026-11-23)
+
+The design tools and the SITL suites share models, so they can agree and still be wrong. `kestrel/validate.py`
+re-derives the key numbers by a second method or checks a physical limit the design tools never looked at.
+All 32 checks pass; details in `build/validation.json`.
+
+| Group | Method | Result |
+|---|---|---|
+| V1 aero | vortex lattice vs AeroBuildup vs DATCOM lift slope (3.63 / 3.95 / 3.44 /rad); neutral point three ways (201 / 204 / 193 mm); wing self-trims (Cm about NP +0.023) | 6/6 |
+| V2 hand calcs | stall 9.7 m/s; hover power by momentum theory 105 W vs model 88 W (model implies FM×η 0.53); cruise power; endurance by hand and from the SITL flight (18.1 vs 21.2 min) | 5/5 |
+| V3 structure | spar and boom stress at 4 g × 1.5 (129, 93, 67 MPa vs 600); boom tip deflection 3.6 mm; boom first mode 25.5–28.6 Hz; twist 0.72° | 10/10 |
+| V4 limits | tip Mach 0.33 / 0.37; motor current 14 / 18.9 A; **peak pack current 65.3 A vs 66 A for a 30C pack**; empty-pack T/W 2.47 | 6/6 |
+| V5 numerics | 1.2 kHz step within 0.006 % of a 4.8 kHz reference (hover and glide) | 2/2 |
+| V6 control | roll 334 deg/s at half throw; elevon to trim at CLmax 31 % of throw; quad yaw moment 2.05× the winglet moment in a 7 m/s crosswind | 3/3 |
+
+What validation changed:
+
+1. **Spar layout (ADR 0005).** A straight quarter-chord spar cannot follow a 30° swept wing; it would exit the
+   leading edge 0.14 m from the centreline. Replaced by an 8×6 mm cross spar at 0.18 m behind the root LE
+   (booms clamp to it) and 6×4 mm outer spars along the quarter chord. Adds $6–10, so the aircraft ceiling
+   moves from $240 to $250.
+2. **Re-balance.** Minimum static margin 3.8 % → 5.1 %.
+3. **Bench items** B12 (2 kg hang test per motor mount), B13 (pack ≥ 35C), B14 (harmonic notch for the boom mode).

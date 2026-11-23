@@ -29,7 +29,7 @@ ARSPD_USE 0
 AIRSPEED_MIN 12          # trimmed stall 9.6 m/s (aero/tables.json) x 1.25
 AIRSPEED_CRUISE 14
 AIRSPEED_MAX 20
-TRIM_THROTTLE 64         # pusher duty at 14 m/s cruise (build/sizing.json)
+TRIM_THROTTLE 65         # pusher duty at 14 m/s cruise (build/sizing.json)
 THR_MAX 100
 PTCH_TRIM_DEG 6          # cruise trim alpha ~7 deg in level flight
 # --- VTOL motors ---
