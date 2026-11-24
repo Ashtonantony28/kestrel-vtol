@@ -1,0 +1,306 @@
+{
+ "parts": 67,
+ "invalid": [],
+ "conflicts": [],
+ "embeds": [
+  {
+   "a": "elevon_L",
+   "b": "horn_L",
+   "mm3": 79.7,
+   "build": "horn slotted into the elevon"
+  },
+  {
+   "a": "elevon_L",
+   "b": "torque_rod_L",
+   "mm3": 62.4,
+   "build": "torque rod glued into both elevon segments"
+  },
+  {
+   "a": "wing_L",
+   "b": "servo_L",
+   "mm3": 7856.9,
+   "build": "servo pocket cut in the foam"
+  },
+  {
+   "a": "wing_L",
+   "b": "torque_rod_L",
+   "mm3": 116.2,
+   "build": "torque rod in a 2 mm groove along the hinge line under the top-skin tape"
+  },
+  {
+   "a": "wing_L",
+   "b": "hatch",
+   "mm3": 2790.7,
+   "build": "hatch is the removable top of the pod cut-out"
+  },
+  {
+   "a": "wing_L",
+   "b": "gps_mast",
+   "mm3": 137.1,
+   "build": "mast hole through the wing root"
+  },
+  {
+   "a": "wing_L",
+   "b": "boom_L",
+   "mm3": 986.2,
+   "build": "boom sits half-recessed in a groove in the wing underside"
+  },
+  {
+   "a": "wing_L",
+   "b": "outer_spar_L",
+   "mm3": 3905.3,
+   "build": "slot cut in the foam for the 6 mm outer spar"
+  },
+  {
+   "a": "wing_L",
+   "b": "clamp_L",
+   "mm3": 4728.3,
+   "build": "clamp glued into a pocket in the wing underside"
+  },
+  {
+   "a": "wing_L",
+   "b": "cross_spar",
+   "mm3": 5495.5,
+   "build": "slot cut in the foam for the 8 mm cross spar (template mark)"
+  },
+  {
+   "a": "wing_L",
+   "b": "harness_L",
+   "mm3": 4023.5,
+   "build": "wire channel cut beside the cross spar"
+  },
+  {
+   "a": "elevon_R",
+   "b": "horn_R",
+   "mm3": 79.7,
+   "build": "horn slotted into the elevon"
+  },
+  {
+   "a": "elevon_R",
+   "b": "torque_rod_R",
+   "mm3": 62.4,
+   "build": "torque rod glued into both elevon segments"
+  },
+  {
+   "a": "wing_R",
+   "b": "servo_R",
+   "mm3": 7856.9,
+   "build": "servo pocket cut in the foam"
+  },
+  {
+   "a": "wing_R",
+   "b": "torque_rod_R",
+   "mm3": 116.2,
+   "build": "torque rod in a 2 mm groove along the hinge line under the top-skin tape"
+  },
+  {
+   "a": "wing_R",
+   "b": "hatch",
+   "mm3": 2791.0,
+   "build": "hatch is the removable top of the pod cut-out"
+  },
+  {
+   "a": "wing_R",
+   "b": "gps_mast",
+   "mm3": 137.1,
+   "build": "mast hole through the wing root"
+  },
+  {
+   "a": "wing_R",
+   "b": "boom_R",
+   "mm3": 986.2,
+   "build": "boom sits half-recessed in a groove in the wing underside"
+  },
+  {
+   "a": "wing_R",
+   "b": "outer_spar_R",
+   "mm3": 3905.3,
+   "build": "slot cut in the foam for the 6 mm outer spar"
+  },
+  {
+   "a": "wing_R",
+   "b": "clamp_R",
+   "mm3": 4728.3,
+   "build": "clamp glued into a pocket in the wing underside"
+  },
+  {
+   "a": "wing_R",
+   "b": "cross_spar",
+   "mm3": 5495.5,
+   "build": "slot cut in the foam for the 8 mm cross spar (template mark)"
+  },
+  {
+   "a": "wing_R",
+   "b": "harness_R",
+   "mm3": 4023.5,
+   "build": "wire channel cut beside the cross spar"
+  },
+  {
+   "a": "horn_L",
+   "b": "pushrod_L",
+   "mm3": 1.2,
+   "build": "clevis / Z-bend through the horn hole"
+  },
+  {
+   "a": "horn_R",
+   "b": "pushrod_R",
+   "mm3": 1.2,
+   "build": "clevis / Z-bend through the horn hole"
+  },
+  {
+   "a": "pod",
+   "b": "strap",
+   "mm3": 30.7,
+   "build": "Velcro strap passes through two slots in the pod floor"
+  },
+  {
+   "a": "pod",
+   "b": "ant_A",
+   "mm3": 6.4,
+   "build": "antenna exits through a hole in the pod floor"
+  },
+  {
+   "a": "pod",
+   "b": "ant_B",
+   "mm3": 6.4,
+   "build": "antenna exits through a hole in the pod floor"
+  },
+  {
+   "a": "pod",
+   "b": "cross_spar",
+   "mm3": 23.3,
+   "build": "8 mm holes through both pod walls"
+  },
+  {
+   "a": "motor_FR",
+   "b": "shaft_FR",
+   "mm3": 36.2,
+   "build": "shaft and adapter are part of the motor"
+  },
+  {
+   "a": "shaft_FR",
+   "b": "prop_FR",
+   "mm3": 361.8,
+   "build": "prop on the adapter"
+  },
+  {
+   "a": "motor_RL",
+   "b": "shaft_RL",
+   "mm3": 36.2,
+   "build": "shaft and adapter are part of the motor"
+  },
+  {
+   "a": "shaft_RL",
+   "b": "prop_RL",
+   "mm3": 361.8,
+   "build": "prop on the adapter"
+  },
+  {
+   "a": "motor_FL",
+   "b": "shaft_FL",
+   "mm3": 36.2,
+   "build": "shaft and adapter are part of the motor"
+  },
+  {
+   "a": "shaft_FL",
+   "b": "prop_FL",
+   "mm3": 361.8,
+   "build": "prop on the adapter"
+  },
+  {
+   "a": "motor_RR",
+   "b": "shaft_RR",
+   "mm3": 36.2,
+   "build": "shaft and adapter are part of the motor"
+  },
+  {
+   "a": "shaft_RR",
+   "b": "prop_RR",
+   "mm3": 361.8,
+   "build": "prop on the adapter"
+  },
+  {
+   "a": "pusher_motor",
+   "b": "pusher_shaft",
+   "mm3": 36.2,
+   "build": "shaft part of the motor"
+  },
+  {
+   "a": "pusher_shaft",
+   "b": "prop_pusher",
+   "mm3": 362.9,
+   "build": "prop on the adapter"
+  }
+ ],
+ "swept": [
+  {
+   "part": "prop disc pusher",
+   "closest": "pod",
+   "gap_mm": 25.5,
+   "required_mm": 6.0,
+   "ok": true
+  },
+  {
+   "part": "prop disc RL",
+   "closest": "wire_RL",
+   "gap_mm": 32.1,
+   "required_mm": 6.0,
+   "ok": true
+  },
+  {
+   "part": "prop disc FR",
+   "closest": "wire_FR",
+   "gap_mm": 32.1,
+   "required_mm": 6.0,
+   "ok": true
+  },
+  {
+   "part": "prop disc RR",
+   "closest": "wire_RR",
+   "gap_mm": 32.1,
+   "required_mm": 6.0,
+   "ok": true
+  },
+  {
+   "part": "prop disc FL",
+   "closest": "wire_FL",
+   "gap_mm": 32.1,
+   "required_mm": 6.0,
+   "ok": true
+  },
+  {
+   "part": "elevon L at -20 deg",
+   "hits": [],
+   "ok": true
+  },
+  {
+   "part": "elevon L at +20 deg",
+   "hits": [],
+   "ok": true
+  },
+  {
+   "part": "elevon R at -20 deg",
+   "hits": [],
+   "ok": true
+  },
+  {
+   "part": "elevon R at +20 deg",
+   "hits": [],
+   "ok": true
+  }
+ ],
+ "gaps": {
+  "front_prop_tip_to_tip_mm": 252.3,
+  "rear_prop_tip_to_tip_mm": 252.3,
+  "rear_prop_to_pusher_disc_mm": 49.6,
+  "front_prop_to_pod_mm": 120.1,
+  "rear_prop_to_wing_mm": 35.0,
+  "rear_prop_to_winglet_mm": 119.7,
+  "pusher_prop_to_ground_mm": 35.5,
+  "pusher_prop_to_wing_mm": 56.9,
+  "lowest_non_leg_part_to_ground_mm": 29.5,
+  "leg_to_mount_saddle_mm": 1.0,
+  "esc_to_leg_mm": 44.5
+ },
+ "ok": true
+}

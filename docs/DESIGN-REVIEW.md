@@ -124,3 +124,33 @@ What validation changed:
    moves from $240 to $250.
 2. **Re-balance.** Minimum static margin 3.8 % → 5.1 %.
 3. **Bench items** B12 (2 kg hang test per motor mount), B13 (pack ≥ 35C), B14 (harmonic notch for the boom mode).
+
+## 7. Detailed CAD and interference audit (2026-11-24, ADR 0006)
+
+The first 3D model was a sizing model and had real geometry faults. It was rebuilt as a 67-part build
+assembly (`kestrel/cad_detail.py`) and audited with `python -m kestrel.interference`:
+
+- every solid is valid and closed
+- every pair of parts is intersected; each overlap above 1 mm³ is either a listed build feature (slot,
+  pocket, hole, glue joint: 38 of them) or a failure
+- each prop disc is swept at full diameter (minimum gap 25.5 mm, required 6 mm), and each elevon is
+  rotated to ±20° about its hinge line
+
+Faults found and fixed:
+
+| Fault | Fix |
+|---|---|
+| Boom under the elevon blocks full down throw | elevon split around the boom, torque rod links the segments |
+| Flight controller inside the battery and XT60 | FC moved behind the battery; GPS onto a mast; re-balanced |
+| Winglets 5–23 mm off the tip rib | winglet placed on the twisted tip chord |
+| Legs inside the motor mount saddle | legs 28 mm inboard of the motor |
+| Motor leads through the legs | lead channel on top of each printed leg |
+| Elevon horn into the fixed wing (swept hinge) | horn placed on the hinge station at the servo arm |
+| Horn hits the torque rod | servo moved to y = 200 mm |
+| Pusher prop hub inside the motor | prop 33.5 mm aft of the pylon plate |
+| Battery strap through the pod floor | two strap slots in the floor (listed build feature) |
+| Faceted polyline wing loft | spline wing sections |
+
+Outputs: `docs/DIMENSIONS.md` (63 dimensions), `cad/drawings/kestrel_drawings.pdf` (three A3 sheets),
+`cad/detail/interference.json`, and the browser viewer in `cad/viewer/`. `tests/test_detail.py` keeps the
+audit green.

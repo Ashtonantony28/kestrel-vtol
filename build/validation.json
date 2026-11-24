@@ -1,5 +1,5 @@
 {
- "passed": 32,
+ "passed": 31,
  "n": 32,
  "checks": [
   {
@@ -20,7 +20,7 @@
   },
   {
    "check": "V1c wing neutral point: vortex lattice vs MAC quarter chord",
-   "value": 0.20111757820163967,
+   "value": 0.20130521563338905,
    "criterion": "within 5 % of 0.2037 m aft of root LE",
    "pass": true,
    "unit": " m aft of root LE",
@@ -28,23 +28,23 @@
   },
   {
    "check": "V1d wing neutral point: AeroBuildup vs vortex lattice",
-   "value": 0.19282060368745818,
-   "criterion": "within 5 % of 0.2011 m aft of root LE",
+   "value": 0.19301524281603316,
+   "criterion": "within 5 % of 0.2013 m aft of root LE",
    "pass": true,
    "unit": " m aft of root LE",
    "note": ""
   },
   {
    "check": "V1e wing-alone static margin (vortex lattice) >= design margin incl. pod",
-   "value": 0.12377019065222941,
-   "criterion": ">= 0.09433",
+   "value": 0.12125271375698271,
+   "criterion": ">= 0.09187",
    "pass": true,
    "unit": "",
-   "note": "design 9.4 % incl. pod"
+   "note": "design 9.2 % incl. pod"
   },
   {
    "check": "V1f wing Cm about its neutral point > 0 (reflex + washout let a tailless wing trim)",
-   "value": 0.022543769543265646,
+   "value": 0.02262846683294585,
    "criterion": ">= 0",
    "pass": true,
    "unit": "",
@@ -52,8 +52,8 @@
   },
   {
    "check": "V2a stall speed sqrt(2W/(rho S CLmax)) vs sizing",
-   "value": 9.678992078099588,
-   "criterion": "within 2 % of 9.679 m/s",
+   "value": 9.659651279223771,
+   "criterion": "within 2 % of 9.66 m/s",
    "pass": true,
    "unit": " m/s",
    "note": ""
@@ -68,27 +68,27 @@
   },
   {
    "check": "V2c cruise power D V / (eta_prop 0.6 x eta_motor 0.75) vs propulsion model",
-   "value": 52.54892226093301,
-   "criterion": "within 25 % of 48.51 W",
+   "value": 50.80432081861631,
+   "criterion": "within 25 % of 46.86 W",
    "pass": true,
    "unit": " W",
    "note": ""
   },
   {
    "check": "V2d endurance: energy / power hand calc vs sizing",
-   "value": 21.240004017903942,
-   "criterion": "within 10 % of 21.24 min",
+   "value": 21.900698585195837,
+   "criterion": "within 10 % of 21.9 min",
    "pass": true,
    "unit": " min",
    "note": ""
   },
   {
    "check": "V2e endurance: SITL flight (scaled to the usable capacity) vs sizing model",
-   "value": 18.058027192458674,
-   "criterion": "within 15 % of 21.24 min",
-   "pass": true,
+   "value": 18.33526710834365,
+   "criterion": "within 15 % of 21.9 min",
+   "pass": false,
    "unit": " min",
-   "note": "SITL flew 17.2 min using 76 %"
+   "note": "SITL flew 18.1 min using 79 %"
   },
   {
    "check": "V3a cross spar bending stress at ultimate load",
@@ -107,8 +107,8 @@
    "note": "outer panel carries 23 % of lift; M = 1.58 N m"
   },
   {
-   "check": "V3c boom front arm (363 mm) stress at 1.5 x full thrust",
-   "value": 66.73195823186931,
+   "check": "V3c boom front arm (362 mm) stress at 1.5 x full thrust",
+   "value": 66.54812363618922,
    "criterion": "<= 600 MPa",
    "pass": true,
    "unit": " MPa",
@@ -116,7 +116,7 @@
   },
   {
    "check": "V3d boom front arm tip deflection at full thrust",
-   "value": 3.5528094562647228,
+   "value": 3.5235282075881944,
    "criterion": "<= 5 mm",
    "pass": true,
    "unit": " mm",
@@ -124,7 +124,7 @@
   },
   {
    "check": "V3e boom front arm first bending mode vs hover 1P (71 Hz) and rate loop (< 15 Hz)",
-   "value": 25.511447898497256,
+   "value": 25.618962703852883,
    "criterion": ">= 15 Hz and <= 47.33 Hz",
    "pass": true,
    "unit": " Hz",
@@ -132,15 +132,15 @@
   },
   {
    "check": "V3f boom front arm twist under full motor torque",
-   "value": 0.7208358352614931,
+   "value": 0.718850061610635,
    "criterion": "<= 1 deg",
    "pass": true,
    "unit": " deg",
    "note": "vs 4 deg yaw tilt; pultruded tube (G 4.5 GPa)"
   },
   {
-   "check": "V3c boom rear arm (337 mm) stress at 1.5 x full thrust",
-   "value": 61.95225874418721,
+   "check": "V3c boom rear arm (338 mm) stress at 1.5 x full thrust",
+   "value": 62.136093339867294,
    "criterion": "<= 600 MPa",
    "pass": true,
    "unit": " MPa",
@@ -148,7 +148,7 @@
   },
   {
    "check": "V3d boom rear arm tip deflection at full thrust",
-   "value": 2.8427701306337774,
+   "value": 2.868151857583758,
    "criterion": "<= 5 mm",
    "pass": true,
    "unit": " mm",
@@ -156,7 +156,7 @@
   },
   {
    "check": "V3e boom rear arm first bending mode vs hover 1P (71 Hz) and rate loop (< 15 Hz)",
-   "value": 28.570289425518222,
+   "value": 28.44166319629213,
    "criterion": ">= 15 Hz and <= 47.33 Hz",
    "pass": true,
    "unit": " Hz",
@@ -164,7 +164,7 @@
   },
   {
    "check": "V3f boom rear arm twist under full motor torque",
-   "value": 0.6692057203391825,
+   "value": 0.6711914939900404,
    "criterion": "<= 1 deg",
    "pass": true,
    "unit": " deg",
@@ -220,31 +220,31 @@
   },
   {
    "check": "V5 hover: state error at the sim's 1.2 kHz step vs 4.8 kHz reference",
-   "value": 5.0672180105745075e-05,
+   "value": 6.34669548288447e-05,
    "criterion": "<= 0.01",
    "pass": true,
    "unit": "",
-   "note": "relative to the largest velocity/rate; errors at 600/1200/2400 Hz: 9.0e-05, 5.1e-05, 1.7e-05"
+   "note": "relative to the largest velocity/rate; errors at 600/1200/2400 Hz: 1.1e-04, 6.3e-05, 1.1e-05"
   },
   {
    "check": "V5 glide: state error at the sim's 1.2 kHz step vs 4.8 kHz reference",
-   "value": 5.473280837105232e-05,
+   "value": 5.259511924989814e-05,
    "criterion": "<= 0.01",
    "pass": true,
    "unit": "",
-   "note": "relative to the largest velocity/rate; errors at 600/1200/2400 Hz: 1.3e-04, 5.5e-05, 1.8e-05"
+   "note": "relative to the largest velocity/rate; errors at 600/1200/2400 Hz: 1.2e-04, 5.3e-05, 1.8e-05"
   },
   {
    "check": "V6a steady roll rate at half elevon throw, cruise",
-   "value": 334.20703543951225,
+   "value": 302.19704385015876,
    "criterion": ">= 90 deg/s",
    "pass": true,
    "unit": " deg/s",
-   "note": "pb/2V = 0.208 (>= 0.07 is brisk for model aircraft)"
+   "note": "pb/2V = 0.188 (>= 0.07 is brisk for model aircraft)"
   },
   {
    "check": "V6b pitch: elevon to trim at CLmax as a fraction of full throw",
-   "value": 0.30808880473550465,
+   "value": 0.323256223778776,
    "criterion": "<= 0.75",
    "pass": true,
    "unit": "",
@@ -252,11 +252,11 @@
   },
   {
    "check": "V6c quad yaw moment available (pairs 80/20 %) vs 2 x winglet moment in a 7 m/s crosswind",
-   "value": 0.4487509768918396,
-   "criterion": ">= 0.4378 N m",
+   "value": 0.4488472094878422,
+   "criterion": ">= 0.4364 N m",
    "pass": true,
    "unit": " N m",
-   "note": "required 0.219 N m (winglets 224 cm^2, 271 mm behind CG)"
+   "note": "required 0.218 N m (winglets 224 cm^2, 270 mm behind CG)"
   }
  ],
  "info": {
@@ -264,10 +264,10 @@
    "cla_vlm": 3.628780748143325,
    "cla_buildup": 3.94795931137532,
    "cla_datcom": 3.442189404328411,
-   "xnp_vlm": 0.20111757820163967,
-   "xnp_buildup": 0.19282060368745818,
+   "xnp_vlm": 0.20130521563338905,
+   "xnp_buildup": 0.19301524281603316,
    "x_ac_analytic": 0.2036994458592949,
-   "sm_vlm_no_pod": 0.12377019065222941,
+   "sm_vlm_no_pod": 0.12125271375698271,
    "AR": 3.7037037037037033
   },
   "structure": {
@@ -279,14 +279,14 @@
     "SF": 4.658262486471405
    },
    "boom_front": {
-    "L": 0.363,
-    "f1_Hz": 25.511447898497256,
-    "defl_mm": 3.5528094562647228
+    "L": 0.362,
+    "f1_Hz": 25.618962703852883,
+    "defl_mm": 3.5235282075881944
    },
    "boom_rear": {
-    "L": 0.337,
-    "f1_Hz": 28.570289425518222,
-    "defl_mm": 2.8427701306337774
+    "L": 0.338,
+    "f1_Hz": 28.44166319629213,
+    "defl_mm": 2.868151857583758
    }
   }
  }

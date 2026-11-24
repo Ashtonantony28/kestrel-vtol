@@ -40,8 +40,16 @@ def build_airplane(s: dict, d_sym: float = 0.0, d_diff: float = 0.0) -> asb.Airp
                             twist=tw, airfoil=af, control_surfaces=cs or [])
 
     hinge = 1 - w["elevon_chord_frac"]
-    cs = [asb.ControlSurface("elevon_sym", symmetric=True, deflection=d_sym, hinge_point=hinge),
-          asb.ControlSurface("elevon_diff", symmetric=False, deflection=d_diff, hinge_point=hinge)]
+    # Elevon split around the boom (ADR 0006). Inserting extra cross-sections to model the 34 mm gap moves
+    # AeroBuildup's neutral point forward by ~9 mm (an artefact of its per-section build-up; vortex lattice moves
+    # < 0.3 mm). So the section layout stays as validated and the gap is modelled as a loss of elevon
+    # effectiveness equal to the lost hinge span: deflection scaled by k (linear range, |d| <= 20 deg).
+    gap = w.get("elevon_gap")
+    k = 1.0
+    if gap:
+        k = 1.0 - gap["width"] / ((e1 - e0) * b2)
+    cs = [asb.ControlSurface("elevon_sym", symmetric=True, deflection=d_sym * k, hinge_point=hinge),
+          asb.ControlSurface("elevon_diff", symmetric=False, deflection=d_diff * k, hinge_point=hinge)]
     wing = asb.Wing(name="wing", symmetric=True, xsecs=[xsec(0.0), xsec(e0, cs), xsec(e1), xsec(1.0)])
     tip_x = b2 * tan_sw
     h, crw = w["winglet_height"], w["winglet_root_chord"]

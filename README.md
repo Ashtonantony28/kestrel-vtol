@@ -39,7 +39,11 @@ python -m kestrel.mc --suite faults    # M4: failures and model errors
 python -m kestrel.mc --suite monte_carlo --n 100  # M4: Monte Carlo
 python -m kestrel.report                # M4: summary -> build/sitl_results.json, docs/img/
 python -m kestrel.validate              # independent cross-checks (32) -> build/validation.json
-python -m kestrel.export_viewer         # meshes for the browser 3D viewer -> cad/viewer/
+python -m kestrel.cad_detail            # detailed 67-part build assembly -> cad/detail/checks.json
+python -m kestrel.interference          # pairwise interference + swept props/elevons, exit 1 on conflict (ADR 0006)
+python -m kestrel.dimensions            # full dimension table -> build/dimensions.json, docs/DIMENSIONS.md
+python -m kestrel.drawing               # 3 dimensioned A3 sheets -> cad/drawings/kestrel_drawings.pdf
+python -m kestrel.export_viewer         # meshes, dimensions and audit for the browser 3D viewer -> cad/viewer/
 ground/tests/run.sh                    # radio bridge: C++ host tests (+ASan/UBSan)
 ```
 

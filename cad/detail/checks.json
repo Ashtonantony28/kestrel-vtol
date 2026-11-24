@@ -1,0 +1,8 @@
+{
+ "servo_inside_wing_L": 0.999472400663511,
+ "servo_inside_wing_R": 0.999472400663511,
+ "prop_hits": [],
+ "ground_z_m": -0.097,
+ "pusher_prop_ground_clearance_m": 0.0355,
+ "pusher_prop_to_wing_m": 0.053667036607774894
+}

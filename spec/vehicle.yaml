@@ -19,6 +19,10 @@ wing:                   # foamboard flying wing, folded (Armin-style) airfoil ap
   tip_twist_deg: -8.0   # washout (set with a printed twist jig at glue-up): trims the tailless wing with ~0 elevon
   elevon_chord_frac: 0.25
   elevon_span_frac: [0.25, 0.95]   # fraction of semispan
+  # the boom runs under the elevon at y = 0.25 m; at full down throw the elevon would hit it (found by
+  # python -m kestrel.interference). Each elevon is split around the boom; one servo drives both segments
+  # through a 2 mm carbon torque rod along the hinge line (ADR 0006).
+  elevon_gap: {center: 0.25, width: 0.034}
   elevon_max_deg: 20.0
   winglet_height: 0.10
   winglet_root_chord: 0.14
@@ -50,12 +54,12 @@ booms:                  # two carbon tubes parallel to x (cut from 1 m tubes)
   diameter: 0.010       # 10x8 mm tube: first bending mode ~37 Hz (8x6 would be ~26 Hz, too close to the rate loop)
   inner_diameter: 0.008
   length: 0.85
-  x_front: 0.218         # front end station
+  x_front: 0.217         # front end station
   # rear end = x_front - length
 
 lift_rotors:            # quad X; positions are motor axes. Rotor centroid = design CG (equal hover load)
-  x_front: 0.183        # front disc fully ahead of the wing LE
-  x_rear: -0.517        # rear disc overlaps only the last few cm of the wing (less hover download)
+  x_front: 0.182        # front disc fully ahead of the wing LE
+  x_rear: -0.518        # rear disc overlaps only the last few cm of the wing (less hover download)
   y: 0.25
   z: -0.035             # prop plane above the boom
   yaw_tilt_deg: 4       # motors tilted about the boom so thrust adds yaw torque in the same sense as prop drag
@@ -102,18 +106,18 @@ mass_items:
   winglets:        {m: 0.012, x: -0.37,  z: -0.04}
   spar_and_glue:   {m: 0.040, x: -0.20,  z: 0.0}   # cross spar at x -0.18 + swept outer spars + glue
   fuselage_pod:    {m: 0.040, x: -0.10,  z: 0.02}
-  booms:           {m: 0.066, x: -0.207,  z: 0.012}   # 2 x 0.75 m x 44 g/m
-  printed_mounts:  {m: 0.040, x: -0.167, z: 0.0}
-  lift_motors:     {m: 0.208, x: -0.167, z: -0.02}   # 4 x 52 g, centroid of front/rear pairs
-  lift_props:      {m: 0.048, x: -0.167, z: -0.04}
-  lift_escs:       {m: 0.100, x: -0.167, z: 0.012}   # 4 x 25 g on booms
+  booms:           {m: 0.066, x: -0.208,  z: 0.012}   # 2 x 0.75 m x 44 g/m
+  printed_mounts:  {m: 0.040, x: -0.168, z: 0.0}
+  lift_motors:     {m: 0.208, x: -0.168, z: -0.02}   # 4 x 52 g, centroid of front/rear pairs
+  lift_props:      {m: 0.048, x: -0.168, z: -0.04}
+  lift_escs:       {m: 0.100, x: -0.168, z: 0.012}   # 4 x 25 g on booms
   pusher_motor:    {m: 0.052, x: -0.33,  z: -0.04}
   pusher_prop:     {m: 0.011, x: -0.36,  z: -0.04}
-  landing_legs:    {m: 0.020, x: -0.167, z: 0.06}
+  landing_legs:    {m: 0.020, x: -0.168, z: 0.06}
   pusher_esc:      {m: 0.025, x: -0.24,  z: 0.02}
   servos:          {m: 0.018, x: -0.28,  z: 0.0}
-  flight_controller: {m: 0.019, x: -0.06, z: 0.02}
-  gps:             {m: 0.012, x: -0.18,  z: -0.03}
+  flight_controller: {m: 0.019, x: -0.110, z: 0.040}   # behind the battery and XT60 (kestrel.interference)
+  gps:             {m: 0.012, x: -0.135, z: -0.04}    # on a mast ahead of the cross spar
   receiver:        {m: 0.003, x: -0.20,  z: 0.02}
   wiring:          {m: 0.040, x: -0.12,  z: 0.02}
   battery:         {m: 0.185, x: -0.019,  z: 0.03}   # slid fore/aft to set CG (solved for 8 % static margin)

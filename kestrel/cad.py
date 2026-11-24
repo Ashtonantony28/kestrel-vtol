@@ -33,9 +33,11 @@ def _items(s):
     zc = -0.02
     bx = s["mass_items"]["battery"]["x"]
     return {
-        "battery": (s["batteries"][s["propulsion"]["battery"]]["mass"], (0.105, 0.034, 0.024), (bx, 0.0, zc - 0.005)),
-        "flight_controller": (0.019, (0.037, 0.026, 0.014), (-0.06, 0.0, zc + 0.01)),
-        "gps": (0.012, (0.025, 0.025, 0.008), (-0.18, 0.0, 0.03)),
+        # battery on the pod floor (inner floor z = -0.048); FC behind it, clear of the battery (the earlier
+        # stacking overlapped it, found by kestrel.interference), with 20 mm for the XT60 between them; GPS ahead of the cross spar at x = -0.18
+        "battery": (s["batteries"][s["propulsion"]["battery"]]["mass"], (0.105, 0.034, 0.024), (bx, 0.0, -0.034)),
+        "flight_controller": (0.019, (0.037, 0.026, 0.014), (bx - 0.0525 - 0.020 - 0.0185, 0.0, -0.040)),
+        "gps": (0.012, (0.025, 0.025, 0.008), (-0.135, 0.0, 0.04)),
         "receiver": (0.003, (0.02, 0.012, 0.004), (-0.20, 0.0, zc)),
         "wiring": (0.040, (0.25, 0.05, 0.02), (-0.12, 0.0, zc)),
         "pusher_esc": (0.025, (0.045, 0.025, 0.008), (-0.24, 0.0, zc)),
@@ -83,7 +85,10 @@ def winglet(s, left=True):
     face = bd.Face(bd.Wire(bd.Polyline(*[(x, z) for x, z in pts], close=True).edges()))
     sol = bd.extrude(face, amount=FOAM_T)                          # in XY of default plane: (x, y=z) -> extrude z
     sol = sol.rotate(bd.Axis.X, 90)                                  # (x, z) -> XZ plane, thickness along -y
-    sol = sol.translate((0, b2 + FOAM_T, 0))
+    sol = sol.translate((0, b2, 0))                                 # outboard face of the tip rib, no gap
+    # follow the tip section's washout (twist about the tip quarter chord) so the winglet sits on the tip chord
+    x_qc_tip = -b2 * tan_sw - 0.25 * w["tip_chord"]
+    sol = sol.rotate(bd.Axis((x_qc_tip, b2, 0), (0, 1, 0)), w["tip_twist_deg"])
     return sol if left else sol.mirror(bd.Plane.XZ)
 
 
@@ -202,9 +207,11 @@ def clearance_checks(s, parts):
     res["pusher_tip_clearance_m"] = parts["propdisc_pusher"].bounding_box().min.Z - z_ground
     res["pod_clearance_m"] = parts["pod"].bounding_box().min.Z - z_ground
     # battery inside pod
-    pod_inner = bd.Box(s["fuselage"]["length"] - 0.01, s["fuselage"]["width"] - 0.01, s["fuselage"]["height"] - 0.01) \
-        .translate(parts["pod"].center())
-    res["battery_in_pod"] = abs((parts["battery"] & pod_inner).volume - parts["battery"].volume) < 1e-9
+    # battery inside the faired pod's cavity: no contact with the 2 mm shell (kestrel.cad_detail.faired_pod)
+    from . import cad_detail
+    shell, _ = cad_detail.faired_pod(s)
+    res["battery_in_pod"] = bool(cad_detail.vol(parts["battery"] & shell) < 1e-9
+                                 and parts["battery"].bounding_box().min.Z > shell.bounding_box().min.Z)
     # pusher to trailing edge clearance (min distance)
     res["pusher_wing_distance_m"] = parts["propdisc_pusher"].distance_to(parts["wing_L"] + parts["wing_R"])
     # spars must stay inside the wing (or the pod): fraction of each spar's volume enclosed
@@ -462,6 +469,7 @@ def printed_parts(s):
     leg += bd.Box(20, tube_d + 6, tube_d + 4)
     leg -= bd.Cylinder((tube_d + 0.3) / 2, 40, rotation=(90, 0, 0))
     leg -= bd.Cylinder((tube_d + 0.3) / 2, 40, rotation=(0, 90, 0))
+    leg -= bd.Box(24, 4.6, 3.0).translate((0, 0, tube_d / 2 + 1.5))    # channel for the motor leads (4.6 mm)
     pusher = bd.Box(40, 40, 4)
     for (x, y) in [(8, 0), (-8, 0), (0, 9.5), (0, -9.5)]:
         pusher -= bd.Cylinder(1.6, 6).translate((x, y, 0))

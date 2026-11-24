@@ -4,35 +4,63 @@
    "wing_L",
    "wing_R"
   ],
-  "bytes": 23684
+  "triangles": 39532
+ },
+ "elevons": {
+  "parts": [
+   "elevon_L",
+   "elevon_R"
+  ],
+  "triangles": 1344
  },
  "winglets": {
   "parts": [
    "winglet_L",
    "winglet_R"
   ],
-  "bytes": 1284
+  "triangles": 1200
  },
  "pod": {
   "parts": [
-   "pod"
+   "pod",
+   "hatch"
   ],
-  "bytes": 684
+  "triangles": 35200
  },
  "booms": {
   "parts": [
    "boom_L",
    "boom_R"
   ],
-  "bytes": 40884
+  "triangles": 1456
  },
  "spars": {
   "parts": [
    "cross_spar",
    "outer_spar_L",
-   "outer_spar_R"
+   "outer_spar_R",
+   "torque_rod_L",
+   "torque_rod_R"
   ],
-  "bytes": 61284
+  "triangles": 2904
+ },
+ "printed": {
+  "parts": [
+   "mount_FR",
+   "mount_RL",
+   "mount_FL",
+   "mount_RR",
+   "leg_FR",
+   "leg_RL",
+   "leg_FL",
+   "leg_RR",
+   "clamp_L",
+   "clamp_R",
+   "pusher_mount",
+   "horn_L",
+   "horn_R"
+  ],
+  "triangles": 21378
  },
  "motors": {
   "parts": [
@@ -42,27 +70,32 @@
    "motor_RR",
    "pusher_motor"
   ],
-  "bytes": 50084
+  "triangles": 22386
  },
- "mounts": {
+ "hardware": {
   "parts": [
-   "mount_FR",
-   "mount_RL",
-   "mount_FL",
-   "mount_RR"
+   "shaft_FR",
+   "shaft_RL",
+   "shaft_FL",
+   "shaft_RR",
+   "pusher_shaft",
+   "pushrod_L",
+   "pushrod_R",
+   "gps_mast"
   ],
-  "bytes": 2484
- },
- "legs": {
-  "parts": [
-   "leg_FR",
-   "leg_RL",
-   "leg_FL",
-   "leg_RR"
-  ],
-  "bytes": 2484
+  "triangles": 11450
  },
  "props": {
+  "parts": [
+   "prop_FR",
+   "prop_RL",
+   "prop_FL",
+   "prop_RR",
+   "prop_pusher"
+  ],
+  "triangles": 80926
+ },
+ "discs": {
   "parts": [
    "propdisc_FR",
    "propdisc_RL",
@@ -70,32 +103,51 @@
    "propdisc_RR",
    "propdisc_pusher"
   ],
-  "bytes": 50084
+  "triangles": 1980
  },
  "battery": {
   "parts": [
-   "battery"
+   "battery",
+   "strap",
+   "xt60"
   ],
-  "bytes": 684
+  "triangles": 8928
  },
- "avionics": {
+ "electronics": {
   "parts": [
    "flight_controller",
-   "gps",
    "receiver",
+   "gps",
    "pusher_esc",
-   "servos",
-   "wiring"
+   "esc_FR",
+   "esc_RL",
+   "esc_FL",
+   "esc_RR",
+   "servo_L",
+   "servo_R"
   ],
-  "bytes": 3684
+  "triangles": 7456
+ },
+ "wiring": {
+  "parts": [
+   "wire_FR",
+   "wire_RL",
+   "wire_FL",
+   "wire_RR",
+   "harness_L",
+   "harness_R",
+   "ant_A",
+   "ant_B"
+  ],
+  "triangles": 2880
  },
  "_markers": {
   "cg_mm": [
-   -167.31761996426542,
-   -7.396818704548348e-15,
-   -4.481411178659581
+   -168.19274614814884,
+   -7.377641120181535e-15,
+   -6.548899945567381
   ],
-  "np_x_mm": -193.07843532343762,
+  "np_x_mm": -193.2804703350576,
   "mass_kg": 1.0554615654757582
  }
 }

@@ -91,7 +91,8 @@ def mc_suite(n, seed=1):
     return out
 
 
-def run_suite(name, jobs_list, jobs=4):
+def run_suite(name, jobs_list, jobs=4, merge=False):
+    """Run the scenarios. merge=True (used by --only) keeps the suite's other runs in summary.json."""
     d = RUNS / name
     d.mkdir(parents=True, exist_ok=True)
     results = []
@@ -109,6 +110,9 @@ def run_suite(name, jobs_list, jobs=4):
             print(f"{r['name']:45s} ok={r['ok']} land_err={r.get('land_error_m', float('nan')):.2f} "
                   f"crash={r['physics']['crashed']} {r['physics']['crash_reason']} t={r.get('sim_time_s', 0):.0f}s "
                   f"{r.get('error', '')}", flush=True)
+    if merge and (d / "summary.json").exists():
+        new = {r["name"] for r in results}
+        results += [r for r in json.loads((d / "summary.json").read_text())["runs"] if r["name"] not in new]
     results.sort(key=lambda r: r["name"])
     summ = {"suite": name, "n": len(results), "passed": sum(r["ok"] for r in results), "runs": results}
     (d / "summary.json").write_text(json.dumps(summ, indent=1, default=float))
@@ -133,7 +137,7 @@ def main():
         for j in jl:
             j["airspeed_sensor"] = True
         name += "_pitot"
-    run_suite(name, jl, a.jobs)
+    run_suite(name, jl, a.jobs, merge=bool(a.only))
 
 
 if __name__ == "__main__":
