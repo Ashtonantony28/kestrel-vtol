@@ -179,3 +179,43 @@ just after take-off at 12 m. The AHRS fell back to DCM, and the aircraft crashed
 landed 0.03 m from the pad, and no other run in the campaign showed this. The harness arms as soon as one
 EKF lane uses GPS. On the real aircraft, arming checks and a longer GPS settle before take-off cover this.
 A harness change to wait for both lanes is an open item.
+
+## 9. External design review fixes (2026-11-25, ADR 0008)
+
+An outside review raised nine items, K1 to K9. Each claim was checked against the code before acting; all nine
+are fixed (ADR 0008 has the detail).
+
+- **Parameters.** A real-board overlay, `sitl/kestrel_hw.parm`, now covers the receiver, GPS, airspeed bus,
+  mode and arm switches and RC failsafe.
+- **Prop model.** Lift props are derated to a figure of merit of 0.65.
+- **Pusher.** `THR_MAX 85` keeps it within its 15 A rating.
+- **Low-speed safety.** `Q_ASSIST_SPEED` is now 11.5 m/s, with a 40° bank limit, and the static margin target
+  is 5.5 %.
+- **BOM.** The cut list and harness are fixed, and the pack must be 35C.
+- **Rules.** The flying rules are now Canadian.
+- **Structure.** The boom clamp now sockets the outer-spar root, and there is a new torsion check.
+
+The parameter-name test found two names ArduPilot had silently ignored. It also found that `ARSPD_BUS` must
+be 0 on this board.
+
+The first SITL rerun with the derated props failed the 10 m/s beam-wind case. The aircraft arrived downwind
+at 25 m/s, overshot the pad by 137 m, hovered back with lift motor 4 saturated, and landed 137 m away on
+2,010 mAh. Restoring the pusher's full throttle did not help. Restoring the old prop model did, which pins the
+cause on the lower hover margin of realistic props.
+
+The fix is `Q_OPTIONS 16`: every VTOL landing now ends with a fixed-wing spiral approach into wind. The same
+case then landed 2.7 m from the pad on 680 mAh.
+
+Full campaign, rerun with every fix:
+
+| Suite | Result |
+|---|---|
+| Wind 0–10 m/s, two directions | 7/7 (worst 2.7 m from the pad, 10 m/s beam wind) |
+| Faults and model errors | 9/10 (lift motor out in hover crashes, as expected for a quad) |
+| Endurance | 2/2; nominal 18.8 min flown, 19.5 min scaled to 80 % usable (sizing model 20.1, V2e passes) |
+| Monte Carlo | 100/100; median 0.68 m, p95 2.2 m, worst 3.5 m, 92 within 2 m |
+
+The approach change also removed the two long-approach Monte Carlo misses (7.1 m and 24.8 m) from §8.
+
+Validation: 36/36. Four checks are new: V3g–V3i (cross spar and wing box torsion) and V4e (pusher current at
+`THR_MAX`).

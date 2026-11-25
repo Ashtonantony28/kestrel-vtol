@@ -84,11 +84,11 @@
   },
   {
    "check": "V2e endurance: SITL flight (scaled to the usable capacity) vs sizing model",
-   "value": 19.721197667818686,
+   "value": 19.500933314671276,
    "criterion": "within 15 % of 20.14 min",
    "pass": true,
    "unit": " min",
-   "note": "SITL flew 18.8 min using 76 %"
+   "note": "SITL flew 18.8 min using 77 %"
   },
   {
    "check": "V3a cross spar bending stress at ultimate load",

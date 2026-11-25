@@ -72,6 +72,8 @@ Q_TRANS_FAIL 45          # transition not finished in 45 s (dead pusher) -> fly 
 Q_TRANS_FAIL_ACT 1       # QRTL
 Q_RTL_MODE 1             # RTL transitions to VTOL land at home
 Q_GUIDED_MODE 1
+Q_OPTIONS 16             # bit 4: fixed-wing spiral approach, ending into wind, for every VTOL landing. Without it a
+                         #  downwind arrival at 25 m/s overshot the pad by 137 m and hovered back into 10 m/s wind
 # --- battery ---
 BATT_MONITOR 4
 BATT_CAPACITY 2200

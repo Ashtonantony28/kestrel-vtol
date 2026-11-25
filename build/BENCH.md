@@ -55,4 +55,4 @@ Source: Transport Canada, [Flying your drone safely and legally](https://tc.cana
 5. **CRUISE handling:** check that `TRIM_THROTTLE` matches the 14 m/s pusher duty (model 65 %), then fly a few minutes of loiter
    with `ARSPD_AUTOCAL 1` and save `ARSPD_RATIO` (B16).
 
-Wind envelope demonstrated in SITL: 10 m/s mean + 1.5 m/s gusts (7/7 runs). The first flights are still for calm days.
+Wind envelope demonstrated in SITL: 10 m/s mean + 1.5 m/s gusts (7/7 runs, after the fixed-wing landing approach, ADR 0008). The first flights are still for calm days.

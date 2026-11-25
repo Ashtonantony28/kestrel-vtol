@@ -59,6 +59,11 @@ some smaller ones. The user asked for the confirmed and plausible ones to be fix
     about 95 g with clamps and pylon included.
   - The boom bending mode is 25.5 Hz; the spec comment had said 37 Hz.
   - The "with reserve" endurance figure uses 64 % of pack energy (80 % usable x 80 %).
+- **Landing approach (found by the SITL rerun).** With the derated props, the 10 m/s beam-wind case failed. The
+  aircraft arrived downwind at 25 m/s, overshot the pad by 137 m, then hovered back into the wind with a lift
+  motor saturated, landing 137 m away with the pack nearly flat. `Q_OPTIONS 16` (always use the fixed-wing
+  spiral approach) makes every VTOL landing finish into the wind. That case then landed 3 m from the pad on
+  680 mAh instead of 2,010 mAh.
 - **Cost ceiling.** `max_bom_usd` rises from $275 to $285 for the harness that had been missing, the 35C pack
   and the longer outer-spar tube.
 
