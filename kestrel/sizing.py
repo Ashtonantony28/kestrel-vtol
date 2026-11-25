@@ -70,7 +70,7 @@ def analyse(s: dict | None = None, lift_motor=None, lift_prop=None, pusher_motor
     lm = P.get("motor", lift_motor or pr["lift_motor"], s)
     lp = P.get("prop", lift_prop or pr["lift_prop"], s)
     pm = P.get("motor", pusher_motor or pr["pusher_motor"], s)
-    pp = P.get("prop", pusher_prop or pr["pusher_prop"], s)
+    pp = P.get("prop", pusher_prop or pr["pusher_prop"], s, role="pusher")
     batt = P.get("battery", pr["battery"], s)
     massp = S.mass_properties(s, use_cad=use_cad)
     mass = massp["mass"]
@@ -90,8 +90,10 @@ def analyse(s: dict | None = None, lift_motor=None, lift_prop=None, pusher_motor
     drag, cl, ld = cruise_drag(s, v, mass, tables)
     cruise, vp_cruise = P.throttle_for_thrust(pm, pp, batt, drag, 1, av_i, airspeed=v)
     p_cruise = cruise.current * cruise.throttle * vp_cruise + mp["avionics_w"]
-    pusher_static, _ = P.solve_with_battery(pm, pp, batt, 1.0, 1, av_i)
-    pusher_at_v, _ = P.solve_with_battery(pm, pp, batt, 1.0, 1, av_i, airspeed=v)
+    thr_max = pr.get("pusher_thr_max", 1.0)            # THR_MAX: the pusher never sees more than this duty
+    # worst case for motor current: a fresh pack (review K4); thrust margins use the nominal pack below
+    pusher_static, _ = P.solve_with_battery(pm, pp, batt, thr_max, 1, av_i, soc_v_cell=batt.v_cell_full)
+    pusher_at_v, _ = P.solve_with_battery(pm, pp, batt, thr_max, 1, av_i, airspeed=v)
 
     usable_wh = batt.energy_wh * batt.usable_frac
     hover_wh = p_hover * mp["hover_s"] / 3600.0
@@ -128,7 +130,9 @@ def analyse(s: dict | None = None, lift_motor=None, lift_prop=None, pusher_motor
         "cruise": {"v_mps": v, "cl": cl, "ld": ld, "drag_n": drag, "pusher_throttle": cruise.throttle,
                    "power_w": p_cruise, "pusher_current_a": cruise.current,
                    "pusher_static_thrust_n": pusher_static.thrust, "pusher_thrust_at_cruise_full_n": pusher_at_v.thrust,
-                   "excess_thrust_ratio": pusher_at_v.thrust / drag},
+                   "excess_thrust_ratio": pusher_at_v.thrust / drag, "pusher_thr_max": thr_max,
+                   "climb_at_cruise_mps": (pusher_at_v.thrust - drag) * v / w,
+                   "pusher_static_current_a": pusher_static.current, "pusher_motor_i_max_cont": pm.i_max_cont},
         "best_endurance": best_end, "best_range": best_rng,
         "battery": {"usable_wh": usable_wh, "hover_wh": hover_wh},
         "endurance_min": endurance_min, "endurance_with_reserve_min": endurance_reserve_min,
@@ -137,6 +141,7 @@ def analyse(s: dict | None = None, lift_motor=None, lift_prop=None, pusher_motor
         "drag_buildup": drag_buildup(s), "aero_source": "tables" if tables else "buildup",
         "esc_ok": full_nom.current <= s["propulsion"]["esc_max_a"],
         "motor_current_ok": full_nom.current <= lm.i_max_cont * 1.15,
+        "pusher_current_ok": pusher_static.current <= pm.i_max_cont,
     }
 
 
@@ -172,9 +177,12 @@ def checks(r: dict, s: dict | None = None) -> dict:
         "hover_throttle<=0.6": r["lift"]["hover_throttle"] <= 0.6,
         "endurance_reserve>=min": r["endurance_with_reserve_min"] >= lim["min_endurance_min"],
         "stall<=max": r["stall_mps"] <= lim["max_stall_mps"],
-        "pusher_excess_thrust>=2": r["cruise"]["excess_thrust_ratio"] >= 2.0,
+        # was "excess thrust >= 2 at 100 % throttle". With THR_MAX capping the pusher for its current limit (review K4)
+        # no A2212 pusher reaches 2.0; the requirement is now the climb rate that ratio stood for (ADR 0008).
+        "pusher_climb_at_cruise>=min": r["cruise"]["climb_at_cruise_mps"] >= lim["min_cruise_climb_mps"],
         "esc_current_ok": r["esc_ok"],
         "motor_current_ok": r["motor_current_ok"],
+        "pusher_current_ok@THR_MAX": r["pusher_current_ok"],
         "aircraft_bom<=max": bom["aircraft"][1] <= lim["max_bom_usd"],
     }
 
@@ -192,6 +200,9 @@ def main():
     print(f"  Hover: throttle {L['hover_throttle']*100:.0f} %, {L['hover_current_each_a']:.1f} A/motor, {L['hover_power_w']:.0f} W")
     C = r["cruise"]
     print(f"  Cruise {C['v_mps']} m/s: CL {C['cl']:.2f}, L/D {C['ld']:.1f}, drag {C['drag_n']:.2f} N, {C['power_w']:.0f} W, pusher {C['pusher_throttle']*100:.0f} %")
+    print(f"  Pusher at THR_MAX {C['pusher_thr_max']*100:.0f} %: {C['pusher_static_current_a']:.1f} A static "
+          f"(motor {C['pusher_motor_i_max_cont']:.0f} A cont), excess thrust at cruise {C['excess_thrust_ratio']:.2f}, "
+          f"climb {C['climb_at_cruise_mps']:.1f} m/s")
     print(f"  Best endurance {r['best_endurance']['v']} m/s ({r['best_endurance']['p']:.0f} W), best range {r['best_range']['v']} m/s ({r['best_range']['wh_per_km']:.2f} Wh/km)")
     print(f"  Stall {r['stall_mps']:.1f} m/s (CLmax {r['clmax']:.2f})")
     print(f"  Endurance {r['endurance_min']:.1f} min ({r['endurance_with_reserve_min']:.1f} with 20 % reserve), hover-only {r['hover_only_min']:.1f} min")

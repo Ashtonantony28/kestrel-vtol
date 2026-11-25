@@ -29,8 +29,9 @@ ARSPD_USE 1
 AIRSPEED_MIN 12          # trimmed stall 9.6 m/s (aero/tables.json) x 1.25
 AIRSPEED_CRUISE 14
 AIRSPEED_MAX 20
+ROLL_LIMIT_DEG 40        # 40 deg bank: stall x1.14 = 11.1 m/s, below AIRSPEED_MIN 12 and under Q_ASSIST_SPEED
 TRIM_THROTTLE 65         # pusher duty at 14 m/s cruise (build/sizing.json)
-THR_MAX 100
+THR_MAX 85               # pusher <=15 A (motor continuous) at full static throttle on a fresh pack (spec propulsion.pusher_thr_max, review K4)
 PTCH_TRIM_DEG 6          # cruise trim alpha ~7 deg in level flight
 # --- VTOL motors ---
 Q_M_PWM_TYPE 0
@@ -38,7 +39,7 @@ Q_M_PWM_MIN 1000
 Q_M_PWM_MAX 2000
 Q_M_SPIN_ARM 0.08
 Q_M_SPIN_MIN 0.12
-Q_M_THST_HOVER 0.49      # sizing: hover duty 49 %
+Q_M_THST_HOVER 0.53      # sizing: hover duty 53 % with derated props (learned in flight, Q_M_HOVER_LEARN 2)
 Q_M_HOVER_LEARN 2
 Q_M_THST_EXPO 0.55
 Q_M_BAT_VOLT_MAX 12.6
@@ -52,12 +53,14 @@ Q_A_RAT_PIT_I 0.20
 Q_A_RAT_PIT_D 0.006
 Q_A_RAT_YAW_P 0.6
 Q_A_RAT_YAW_I 0.06
-Q_A_ACCEL_Y_MAX 9000
+# (Q_A_ACCEL_Y_MAX 9000 removed: ArduPilot 4.7 renamed it Q_A_ACC_Y_MAX, so it was never applied. Every SITL
+#  run flew the 270 deg/s^2 default, which is what we keep. Names are now checked by tests/test_params.py.)
 # --- transitions ---
 Q_TRANSITION_MS 6000
-Q_ASSIST_SPEED 10        # lift motors help below 10 m/s (trimmed stall 9.6); 11 tripped on synthetic-airspeed noise in wind
+Q_ASSIST_SPEED 11.5      # lift motors help below 11.5 m/s: stall 9.7 m/s rises to 11.1 m/s at the 40 deg bank limit.
+                         # (Was 10 to dodge synthetic-airspeed noise; the pitot removed that reason, review K5)
 Q_ASSIST_ALT 15          # lift motors also help below 15 m in plane modes (e.g. a stuck elevon sinking the wing)
-Q_ASSIST_DELAY 1.0       # synthetic airspeed is noisy without a sensor: require 1 s below threshold
+Q_ASSIST_DELAY 0.5       # the pitot reading is clean; 0.5 s rejects gust spikes
 Q_WVANE_ENABLE 1         # VTOL: yaw nose into wind; a flying wing side-on to 10 m/s wind saturated a lift motor
 Q_WVANE_GAIN 1
 Q_FWD_THR_USE 1          # hold position against wind with the pusher, not by pitching nose down: a nose-down
@@ -69,6 +72,8 @@ Q_TRANS_FAIL 45          # transition not finished in 45 s (dead pusher) -> fly 
 Q_TRANS_FAIL_ACT 1       # QRTL
 Q_RTL_MODE 1             # RTL transitions to VTOL land at home
 Q_GUIDED_MODE 1
+Q_OPTIONS 16             # bit 4: fixed-wing spiral approach, ending into wind, for every VTOL landing. Without it a
+                         #  downwind arrival at 25 m/s overshot the pad by 137 m and hovered back into 10 m/s wind
 # --- battery ---
 BATT_MONITOR 4
 BATT_CAPACITY 2200

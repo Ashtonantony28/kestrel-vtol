@@ -54,7 +54,7 @@
   {
    "a": "wing_L",
    "b": "clamp_L",
-   "mm3": 4728.3,
+   "mm3": 7629.8,
    "build": "clamp glued into a pocket in the wing underside"
   },
   {
@@ -120,7 +120,7 @@
   {
    "a": "wing_R",
    "b": "clamp_R",
-   "mm3": 4728.3,
+   "mm3": 7629.8,
    "build": "clamp glued into a pocket in the wing underside"
   },
   {
@@ -146,6 +146,12 @@
    "b": "pushrod_R",
    "mm3": 1.2,
    "build": "clevis / Z-bend through the horn hole"
+  },
+  {
+   "a": "pod",
+   "b": "strap",
+   "mm3": 30.7,
+   "build": "Velcro strap passes through two slots in the pod floor"
   },
   {
    "a": "pod",
@@ -260,6 +266,13 @@
    "ok": true
   },
   {
+   "part": "prop disc FL",
+   "closest": "wire_FL",
+   "gap_mm": 32.1,
+   "required_mm": 6.0,
+   "ok": true
+  },
+  {
    "part": "prop disc RR",
    "closest": "wire_RR",
    "gap_mm": 32.1,
@@ -269,13 +282,6 @@
   {
    "part": "prop disc RL",
    "closest": "wire_RL",
-   "gap_mm": 32.1,
-   "required_mm": 6.0,
-   "ok": true
-  },
-  {
-   "part": "prop disc FL",
-   "closest": "wire_FL",
    "gap_mm": 32.1,
    "required_mm": 6.0,
    "ok": true
@@ -302,12 +308,12 @@
   }
  ],
  "gaps": {
-  "front_prop_tip_to_tip_mm": 252.3,
-  "rear_prop_tip_to_tip_mm": 252.3,
-  "rear_prop_to_pusher_disc_mm": 49.6,
-  "front_prop_to_pod_mm": 120.1,
-  "rear_prop_to_wing_mm": 35.0,
-  "rear_prop_to_winglet_mm": 119.7,
+  "front_prop_tip_to_tip_mm": 254.1,
+  "rear_prop_tip_to_tip_mm": 254.1,
+  "rear_prop_to_pusher_disc_mm": 49.8,
+  "front_prop_to_pod_mm": 121.9,
+  "rear_prop_to_wing_mm": 33.6,
+  "rear_prop_to_winglet_mm": 118.9,
   "pusher_prop_to_ground_mm": 35.5,
   "pusher_prop_to_wing_mm": 56.9,
   "lowest_non_leg_part_to_ground_mm": 29.5,

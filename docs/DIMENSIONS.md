@@ -15,8 +15,8 @@ sideways from the centreline, and up from the root chord line. Drawing: `cad/dra
 | Overall length (front prop tip to rear prop tip) | 954.0 mm |  |
 | Overall height (ground to top of the pusher prop arc) | 238.5 mm |  |
 | Height to winglet tip (ground to top) | 184.8 mm |  |
-| All-up weight | 1065 g | CAD mass properties |
-| CG station (behind root LE) | 168.2 mm | balance point: mark it under both wing roots |
+| All-up weight | 1091 g | CAD mass properties |
+| CG station (behind root LE) | 166.9 mm | balance point: mark it under both wing roots |
 | Neutral point (behind root LE) | 193.3 mm | static margin 9.4 % MAC |
 
 ## Wing
@@ -66,7 +66,7 @@ sideways from the centreline, and up from the root chord line. Drawing: `cad/dra
 | Tail behind root LE | 390.0 mm |  |
 | Nose corner radius | 22.0 mm |  |
 | Hatch (L × W) | 260.0 × 66.4 mm |  |
-| Battery (L × W × H) | 105.0 × 34.0 × 24.0 mm | centre 32.0 mm behind root LE; slide to balance |
+| Battery (L × W × H) | 105.0 × 34.0 × 24.0 mm | centre 19.0 mm behind root LE; slide to balance |
 | Pitot tube (OD × length) | 4.0 × 90.0 mm | tip 50.0 mm ahead of the nose, on the centreline (ADR 0007) |
 | Airspeed sensor board (L × W × H) | 26.0 × 18.0 × 8.0 mm | centre -68.0 mm behind root LE (negative = ahead), on a 4.0 mm foam pad |
 
@@ -76,22 +76,22 @@ sideways from the centreline, and up from the root chord line. Drawing: `cad/dra
 |---|---|---|
 | Boom tube (OD / ID × length) | 10.0 / 8.0 × 850.0 mm | carbon, cut from 1 m |
 | Boom lateral position (each side) / spacing | 250.0 / 500.0 mm |  |
-| Boom front / rear end station | +217.0 / -633.0 mm |  |
+| Boom front / rear end station | +218.0 / -632.0 mm |  |
 | Boom axis below root chord line | 12.0 mm |  |
 | Cross spar (OD / ID × length) | 8.0 / 6.0 × 500.0 mm |  |
 | Cross spar station (behind root LE) / height | 180.0 / +6.0 mm |  |
 | Outer spars (OD / ID × length) | 6.0 / 4.0 × 248.7 mm | along the quarter chord, 250.0 to 470.0 mm out |
-| Boom-to-spar clamp (L × W × H) | 22.0 × 16.0 × 34.0 mm | printed, one per side |
+| Boom-to-spar clamp (L × W × H) | 58.9 × 31.8 × 35.0 mm | printed, one per side |
 
 ## Lift rotors
 
 | Dimension | Value | Note |
 |---|---|---|
-| Motor stations, front / rear (from root LE) | +182.0 / -518.0 mm |  |
+| Motor stations, front / rear (from root LE) | +183.0 / -517.0 mm |  |
 | Motor spacing, fore-aft / side-to-side / diagonal | 700.0 / 500.0 / 860.2 mm |  |
 | Prop | 10×4.5 in (254.0 mm) |  |
 | Prop plane above boom axis | 47.0 mm |  |
-| Motor tilt (outboard, about the boom) | 4 deg |  |
+| Motor tilt (outboard, about the boom) | 5 deg |  |
 | Gap between left and right prop tips | 246.0 mm |  |
 | Prop tip to pod side | 88.0 mm |  |
 | Motor mount plate (mm) | 34 × 34 × 7, M3 holes on 16 / 19 mm |  |
@@ -102,7 +102,7 @@ sideways from the centreline, and up from the root chord line. Drawing: `cad/dra
 | Dimension | Value | Note |
 |---|---|---|
 | Leg height (boom axis to ground) | 85.0 mm |  |
-| Leg stations, front / rear | +154.0 / -490.0 mm | 28.0 mm inboard of each motor |
+| Leg stations, front / rear | +155.0 / -489.0 mm | 28.0 mm inboard of each motor |
 | Footprint (fore-aft × side-to-side) | 644.0 × 500.0 mm |  |
 | Pod ground clearance | 47.0 mm |  |
 

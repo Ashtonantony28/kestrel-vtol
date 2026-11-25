@@ -124,7 +124,7 @@ class Vehicle:
         self.lm = P.get("motor", pr["lift_motor"], s)
         self.lp = P.get("prop", pr["lift_prop"], s)
         self.pm = P.get("motor", pr["pusher_motor"], s)
-        self.pp = P.get("prop", pr["pusher_prop"], s)
+        self.pp = P.get("prop", pr["pusher_prop"], s, role="pusher")
         self.batt = P.get("battery", pr["battery"], s)
         self.cap_c = self.batt.capacity_ah * 3600 * d.batt_capacity
         self.r_int = self.batt.r_int * d.batt_r

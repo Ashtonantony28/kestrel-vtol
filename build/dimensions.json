@@ -38,14 +38,14 @@
   {
    "group": "Overall",
    "name": "All-up weight",
-   "value": 1065,
+   "value": 1091,
    "unit": "g",
    "note": "CAD mass properties"
   },
   {
    "group": "Overall",
    "name": "CG station (behind root LE)",
-   "value": 168.2,
+   "value": 166.9,
    "unit": "mm",
    "note": "balance point: mark it under both wing roots"
   },
@@ -257,7 +257,7 @@
    "name": "Battery (L × W × H)",
    "value": "105.0 × 34.0 × 24.0",
    "unit": "mm",
-   "note": "centre 32.0 mm behind root LE; slide to balance"
+   "note": "centre 19.0 mm behind root LE; slide to balance"
   },
   {
    "group": "Pod",
@@ -290,7 +290,7 @@
   {
    "group": "Booms and spars",
    "name": "Boom front / rear end station",
-   "value": "+217.0 / -633.0",
+   "value": "+218.0 / -632.0",
    "unit": "mm",
    "note": ""
   },
@@ -325,14 +325,14 @@
   {
    "group": "Booms and spars",
    "name": "Boom-to-spar clamp (L × W × H)",
-   "value": "22.0 × 16.0 × 34.0",
+   "value": "58.9 × 31.8 × 35.0",
    "unit": "mm",
    "note": "printed, one per side"
   },
   {
    "group": "Lift rotors",
    "name": "Motor stations, front / rear (from root LE)",
-   "value": "+182.0 / -518.0",
+   "value": "+183.0 / -517.0",
    "unit": "mm",
    "note": ""
   },
@@ -360,7 +360,7 @@
   {
    "group": "Lift rotors",
    "name": "Motor tilt (outboard, about the boom)",
-   "value": 4,
+   "value": 5,
    "unit": "deg",
    "note": ""
   },
@@ -402,7 +402,7 @@
   {
    "group": "Landing gear",
    "name": "Leg stations, front / rear",
-   "value": "+154.0 / -490.0",
+   "value": "+155.0 / -489.0",
    "unit": "mm",
    "note": "28.0 mm inboard of each motor"
   },
@@ -497,12 +497,12 @@
    "id": "length",
    "label": "overall length 954",
    "a": [
-    309.0,
+    310.0,
     570.0,
     -97.0
    ],
    "b": [
-    -645.0,
+    -644.0,
     570.0,
     -97.0
    ],
@@ -589,12 +589,12 @@
    "id": "rotors",
    "label": "motor spacing 700",
    "a": [
-    182.0,
+    183.0,
     -570.0,
     35.0
    ],
    "b": [
-    -518.0,
+    -517.0,
     -570.0,
     35.0
    ],
@@ -608,12 +608,12 @@
    "id": "prop",
    "label": "prop Ø254",
    "a": [
-    309.0,
+    310.0,
     250.0,
     47.0
    ],
    "b": [
-    55.0,
+    56.0,
     250.0,
     47.0
    ],
@@ -664,12 +664,12 @@
    "id": "legs",
    "label": "leg 85",
    "a": [
-    154.0,
+    155.0,
     -280.0,
     -12.0
    ],
    "b": [
-    154.0,
+    155.0,
     -280.0,
     -97.0
    ],
