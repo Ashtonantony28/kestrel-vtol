@@ -8,6 +8,28 @@ flown by ArduPlane 4.7.3. It takes off and lands like a quadcopter, and cruises 
 - **Design:** sized, shaped, built in CAD, balanced and flown in simulation before any part is
   bought. The plan and the reasoning are in `PLAN.md` (kept in the project folder).
 
+## Gallery
+
+![Turntable of the detailed CAD assembly](docs/media/turntable.gif)
+
+This turntable comes from the detailed CAD assembly in the three.js viewer (`node scripts/record_turntable.mjs`). The [MP4](docs/media/turntable.mp4) adds a second revolution with the foam in X-ray, which shows the cross spar, the outer spars, the servos, the torque rods and the pod electronics ([still](docs/media/xray.png)). It is a CAD model only, and nothing has been built yet.
+
+| Iso | Top | Under |
+|---|---|---|
+| ![iso](cad/renders/kestrel_iso.png) | ![top](cad/renders/kestrel_top.png) | ![under](cad/renders/kestrel_under.png) |
+
+| General arrangement (A3 sheet 1) | Wing structure (sheet 2) | Wiring |
+|---|---|---|
+| ![sheet 1](cad/drawings/sheet_1_general_arrangement.png) | ![sheet 2](cad/drawings/sheet_2_wing_structure.png) | ![wiring](cad/drawings/wiring_diagram.png) |
+
+**ArduPlane SITL** (simulation): the full mission (VTOL takeoff, transition, cruise, back-transition and landing) in calm air and in a 7 m/s wind, and the 100-run Monte Carlo.
+
+| Mission, calm | Mission, 7 m/s wind |
+|---|---|
+| ![mission calm](docs/img/mission_calm.png) | ![mission wind 7](docs/img/mission_wind7.png) |
+
+![Monte Carlo: landing error, sink rate and energy over 100 runs](docs/img/monte_carlo.png)
+
 ## Design at a glance (all from `spec/vehicle.yaml`)
 
 | | |
