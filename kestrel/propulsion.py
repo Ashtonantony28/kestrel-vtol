@@ -54,6 +54,7 @@ class Battery:
     v_cell_nom: float
     v_cell_full: float
     v_cell_empty: float
+    c_rating: float = 30.0     # continuous C rating; the pack must cover peak draw (validation V4c)
 
     @property
     def v_nom(self) -> float:
@@ -64,10 +65,21 @@ class Battery:
         return self.v_nom * self.capacity_ah
 
 
-def get(kind: str, name: str, s: dict | None = None):
+def get(kind: str, name: str, s: dict | None = None, raw: bool = False, role: str = "lift"):
+    """raw=True returns a prop exactly as tabulated (it reproduces the vendor datasheet point). Otherwise the
+    power coefficient is scaled by spec prop_derate.<role>_cp_scale, so a lift prop's static figure of merit
+    matches cheap moulded props on a thrust stand rather than the vendor's optimistic figure (review K3)."""
     s = s or _spec.load()
     table = {"motor": ("motors", Motor), "prop": ("props", Prop), "battery": ("batteries", Battery)}[kind]
-    return table[1](**s[table[0]][name])
+    row = dict(s[table[0]][name])
+    if kind == "prop" and not raw:
+        row["cp0"] *= s.get("prop_derate", {}).get(f"{role}_cp_scale", 1.0)
+    return table[1](**row)
+
+
+def figure_of_merit(prop: "Prop") -> float:
+    """Static figure of merit from propeller (rev/s) coefficients: ct^1.5 / (cp sqrt(pi/2))."""
+    return prop.ct0 ** 1.5 / (prop.cp0 * math.sqrt(math.pi / 2))
 
 
 @dataclass

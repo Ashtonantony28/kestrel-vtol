@@ -1,0 +1,54 @@
+# Kestrel: hardware-only parameters for the real SpeedyBee F405 Wing Mini (ArduPilot target SpeedyBeeF405WING).
+# Load AFTER sitl/kestrel.parm. SITL does not load this file: its serial ports, receiver and RC switches are
+# driven by the harness over MAVLink (kestrel/fly.py), and a mode switch read at boot would fight the harness.
+# Serial numbers follow the board's hwdef SERIAL_ORDER (OTG1 USART1 USART2 USART3 UART4 UART5 USART6).
+# Check every value with the props OFF (build/BENCH.md B9, B17).
+#
+# --- receiver: ELRS (CRSF) on USART1 = SERIAL1, pads T1/R1. The SBUS pad (USART2 RX) has an inverter and
+#     does not work for CRSF.
+SERIAL1_PROTOCOL 23      # RCIN (board default; set anyway so a reset to defaults on another target is caught)
+SERIAL1_BAUD 115         # ignored for RCIN; ELRS speed comes from RC_OPTIONS below
+RC_OPTIONS 8192          # bit 13: 420 kbaud CRSF for ELRS. Clear it if the receiver is flashed for 400000
+RC_PROTOCOLS 512         # CRSF only: stops the auto-detect from locking onto noise on another protocol
+RSSI_TYPE 3              # link quality from the CRSF telemetry
+# --- GPS on USART3 = SERIAL3 (pads T3/R3), compass on I2C1 ---
+SERIAL3_PROTOCOL 5       # GPS
+SERIAL3_BAUD 115         # M10 modules ship at 115200 (GPS1_TYPE 1 auto-configures them)
+GPS1_TYPE 1              # auto
+COMPASS_AUTODEC 1
+# --- airspeed: MS4525DO on the board's only I2C bus. ArduPilot's ARSPD_BUS default is 1, which does not
+#     exist on this board, so the sensor would never be found ---
+ARSPD_BUS 0
+ARSPD_TYPE 1             # MS4525
+ARSPD_PIN 65             # not analog
+ARSPD_AUTOCAL 0          # turn to 1 for the ARSPD_RATIO calibration flight (bench item B16), then back to 0
+# --- flight modes on CH5, as sent by ground/kestrel_radio (ground/README.md "Controls") ---
+FLTMODE_CH 5
+FLTMODE1 19              # QLOITER   (Y)
+FLTMODE2 18              # QHOVER    (B)
+FLTMODE3 7               # CRUISE    (A)
+FLTMODE4 10              # AUTO      (D-pad up)
+FLTMODE5 11              # RTL       (X)  -> lands as a VTOL at home, Q_RTL_MODE 1
+FLTMODE6 20              # QLAND     (D-pad down)
+INITIAL_MODE 19          # boot in QLOITER: never boot in a plane mode on the bench
+# --- arming: CH7 switch only (LB + RB held 1.5 s with the throttle fully down) ---
+RC7_OPTION 153           # ArmDisarm: CH7 high = arm, low = disarm
+ARMING_RUDDER 0          # no stick arming: the spring-centred throttle makes rudder-arm unreliable
+ARMING_SKIPCHK 0         # skip no pre-arm checks (4.7 replaced ARMING_CHECK with this)
+ARMING_REQUIRE 1         # outputs idle until armed
+BRD_SAFETY_DEFLT 0       # this board has no safety switch
+# --- RC failsafe. ELRS stops sending frames on link loss (failsafe mode "No pulses"), so ArduPilot sees
+#     the loss directly; THR_FS_VALUE only matters if the receiver is set to "Last position" by mistake ---
+THR_FAILSAFE 1
+THR_FS_VALUE 950
+FS_SHORT_ACTN 0          # 1.5 s: hold mode (in Q modes it already holds position)
+FS_LONG_ACTN 1           # 5 s: RTL -> VTOL land at home
+FS_LONG_TIMEOUT 5
+FS_GCS_ENABL 0           # no GCS link required in flight
+# --- outputs: motors S5-S8 run on TIM8 (S5-S7) and TIM2 (S8); servos S1-S2 on TIM4, pusher S3 on TIM3.
+#     No servo shares a timer with a motor, so the 490 Hz motor rate cannot reach the SG90s ---
+Q_RC_SPEED 490           # lift-motor PWM rate (default); the pusher on S3 runs at SERVO_RATE
+SERVO_RATE 50
+# --- battery monitor scale for the Wing Mini's on-board sensor (hwdef defaults; calibrate with a meter, B4) ---
+BATT_VOLT_MULT 11.05
+BATT_AMP_PERVLT 50

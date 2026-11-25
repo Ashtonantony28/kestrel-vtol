@@ -43,3 +43,18 @@ def test_dimension_table_matches_spec(built):
     rows = {r["name"]: r["value"] for r in d["table"]}
     span = next(v for k, v in rows.items() if k.startswith("Wingspan"))
     assert float(span) == pytest.approx(s["wing"]["span"] * 1000, abs=0.5)
+
+
+def test_printed_masses_match_exported_volumes():
+    """Mass model vs the exported printed parts at 50 % of PETG density (design review: BOM said ~130 g)."""
+    import json
+    from kestrel import cad, spec as S
+    man = S.ROOT / "cad" / "build" / "manifest.json"
+    if not man.exists():
+        pytest.skip("run python -m kestrel.export_build first")
+    v = {k: d["volume_cm3"] for k, d in json.loads(man.read_text())["printed"].items()}
+    g = lambda cm3: cm3 * 1.27 * 0.5 / 1000
+    s = S.load()
+    for model, vol in ((cad.MOUNT_MASS, v["motor_mount_right_x2"]), (cad.CLAMP_MASS, v["boom_clamp_x2"]),
+                       (cad.PYLON_MASS, v["pusher_pylon_x1"]), (s["landing_legs"]["mass_each"], v["leg_x4"])):
+        assert model == pytest.approx(g(vol), rel=0.2)

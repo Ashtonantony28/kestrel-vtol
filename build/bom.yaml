@@ -1,9 +1,9 @@
 # Lean BOM (USD, low/high). Checked listings 2026-11-22 where marked; others are typical hobby/AliExpress prices.
 aircraft:
   - {item: "Dollar-store foamboard 20x30 in", qty: 5, low: 4, high: 6}
-  - {item: "Carbon tube 10x8 mm x 1000 mm (booms, cut to 750 mm)", qty: 2, low: 10, high: 14}
-  - {item: "Carbon tube 8x6 mm x 500 mm (cross spar) + 6x4 mm x 500 mm (outer spars, cut 2x 220 mm)", qty: 1, low: 6, high: 10}
-  - {item: "PETG/PLA printed parts incl. legs (~130 g)", qty: 1, low: 2, high: 4}
+  - {item: "Carbon tube 10x8 mm x 1000 mm (booms, cut to 850 mm)", qty: 2, low: 10, high: 14}
+  - {item: "Carbon tube 8x6 mm x 500 mm (cross spar) + 6x4 mm x 1000 mm (outer spars, cut 2x 250 mm; each is 249 mm along the sweep)", qty: 1, low: 8, high: 13}
+  - {item: "PETG printed parts: 4 mounts, 4 legs, 2 boom clamps, pusher pylon (~95 g, 3 walls + 25 % infill)", qty: 1, low: 2, high: 4}
   - {item: "Hot glue, packing tape, control horns, linkages", qty: 1, low: 5, high: 8}
   - {item: "SG90-class 9 g servo (elevons)", qty: 2, low: 4, high: 6}
   - {item: "A2212 motor + 30 A ESC combos: 4x 1000KV (lift) + 1x 1400KV (pusher)", qty: 5, low: 55, high: 65, checked: "4-pack ~$47 (Walmart listing)"}
@@ -12,10 +12,11 @@ aircraft:
   - {item: "Generic M10 GPS with compass", qty: 1, low: 15, high: 22}
   - {item: "MS4525DO I2C airspeed sensor with pitot-static tube and hose (ADR 0007)", qty: 1, low: 14, high: 22, note: "generic clone; Matek ASPD-4525 is ~$35"}
   - {item: "ELRS 2.4 GHz receiver (aircraft)", qty: 1, low: 10, high: 13}
-  - {item: "3S 2200 mAh LiPo 2-pack", qty: 1, low: 19, high: 35, checked: "Ovonic 2-pack $19.19"}
-  - {item: "Wire, XT60, heatshrink", qty: 1, low: 5, high: 8}
+  - {item: "3S 2200 mAh LiPo 2-pack, 35C or higher (peak draw 69 A, validation V4c)", qty: 1, low: 22, high: 38, note: "check the C rating: some cheap 2200 packs are 25-30C"}
+  - {item: "Power harness: XT60 pigtail, 1 m red + 1 m black 14 AWG silicone wire, 5x XT30 or 3.5 mm bullet sets for the ESC leads, heatshrink", qty: 1, low: 8, high: 12, note: "star point in the pod feeds the FC and 2 boom harnesses (28 A each) and the pusher (cad/drawings/wiring_diagram.pdf)"}
 ground:
   - {item: "ESP32 dev board (radio bridge)", qty: 1, low: 0, high: 6}
   - {item: "ELRS receiver re-flashed as transmitter", qty: 1, low: 10, high: 13}
   - {item: "Basic 3S balance charger", qty: 1, low: 12, high: 25}
+  - {item: "OPTIONAL, recommended for first flights: ELRS 2.4 GHz handheld radio (e.g. RadioMaster Pocket or Boxer class)", qty: 1, low: 0, high: 0, optional_low: 60, optional_high: 90, note: "a proven transmitter with its own failsafe while the Xbox bridge is new; not counted in the totals"}
   - {item: "LiPo safe bag", qty: 1, low: 6, high: 8}

@@ -36,6 +36,7 @@ ALLOWED = [
     ("outer_spar_", "elevon_", "outer spar ends 2 mm short of the hinge line; trim the slot, do not cut the elevon"),
     ("boom_", "wing_", "boom sits half-recessed in a groove in the wing underside"),
     ("boom_", "clamp_", "boom seats in the printed clamp bore"),
+    ("outer_spar_", "clamp_", "outer-spar root seats in the clamp socket (review K8)"),
     ("clamp_", "wing_", "clamp glued into a pocket in the wing underside"),
     ("servo_", "wing_", "servo pocket cut in the foam"),
     ("servo_", "elevon_", "servo pocket"),

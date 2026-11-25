@@ -207,6 +207,22 @@ def faired_pod(s):
     return outer - inner, top
 
 
+CLAMP_SOCKET_LEN = 0.028     # outer-spar socket in the boom clamp (design review K8)
+CLAMP_SOCKET_WALL = 0.0025
+
+
+def _outer_spar_axis(s, sy):
+    """Root point and unit direction of an outer spar, as placed by kestrel.cad (quarter chord, mid-height)."""
+    w, os_ = s["wing"], s["structure"]["outer_spar"]
+    b2, tsw = w["span"] / 2, math.tan(math.radians(w["le_sweep_deg"]))
+
+    def qc(y):
+        c = w["root_chord"] + (w["tip_chord"] - w["root_chord"]) * y / b2
+        return bd.Vector(-(y * tsw + 0.25 * c), sy * y, 0.035 * c)
+    p0, p1 = qc(os_["y0"]), qc(os_["y1"])
+    return p0, (p1 - p0).normalized()
+
+
 def build_detail(s=None):
     s = s or S.load()
     simple, rotors = cad.build(s)
@@ -366,6 +382,22 @@ def build_detail(s=None):
             blk = bd.fillet(blk.edges().filter_by(bd.Axis.Z), 0.002)
         except Exception:
             pass
+        # design review K8: the outer-spar root sits ~32 mm aft of the cross spar, so before this the outer
+        # panel's bending load passed through foam and glue. A web from the clamp carries a 28 mm socket
+        # around the outer-spar root: the panel load now goes outer spar -> clamp -> boom and cross spar.
+        sp = simple[f"outer_spar_{side}"]
+        p0, d = _outer_spar_axis(s, sy)
+        socket_len, wall = CLAMP_SOCKET_LEN, CLAMP_SOCKET_WALL
+        sock = bd.Plane(origin=p0 - d * 0.004, z_dir=d) * bd.Cylinder(
+            st["outer_spar"]["od"] / 2 + wall, socket_len, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+        x0, x1 = -cs["x_aft"] - 0.008, p0.X
+        zlo, zhi = cs["z"] - 0.003, p0.Z + 0.002
+        web = bd.Box(abs(x1 - x0), 0.008, zhi - zlo).translate(((x0 + x1) / 2, sy * bm["y"], (zlo + zhi) / 2))
+        blk = blk + sock + web
+        blk -= bd.Plane(origin=p0 - d * 0.02, z_dir=d) * bd.Cylinder(
+            st["outer_spar"]["od"] / 2 + 0.0002, 0.08, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+        blk -= bd.Cylinder(bm["diameter"] / 2 + 0.0002, 0.06, rotation=(0, 90, 0)).translate((-cs["x_aft"], sy * bm["y"], z_boom))
+        blk -= bd.Cylinder(cs["od"] / 2 + 0.0002, 0.03, rotation=(90, 0, 0)).translate((-cs["x_aft"], sy * bm["y"], cs["z"]))
         P[f"clamp_{side}"] = blk
     P["cross_spar"] = simple["cross_spar"]
 

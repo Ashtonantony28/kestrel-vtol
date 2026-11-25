@@ -32,7 +32,14 @@ structure:              # checked by python -m kestrel.validate (docs/DESIGN-REV
   tube_E: 110.0e9
   tube_G: 4.5e9           # pultruded tubes are weak in torsion; roll-wrapped would be ~3x stiffer
   tube_sigma_allow: 600.0e6
+  tube_tau_allow: 40.0e6   # torsional shear allowable for pultruded tube (matrix-dominated; handbook 40-70 MPa)
   foam_skin: 0.005        # foamboard thickness (folded airfoil is hollow between skins)
+  # Torsion of the inboard wing box (design review K8). Foamboard = 4.6 mm foam + two ~0.2 mm paper faces; paper
+  # G ~1-2 GPa gives Gt ~0.4-0.8 MN/m. Use half the low end (glue joints, creases). Allowable shear flow is a
+  # conservative guess for paper-faced board. Both are measured by bench item B18 (boom pitch under a hung weight).
+  foamboard_shear_stiffness: 2.0e5   # N/m
+  foamboard_shear_flow_allow: 1500.0 # N/m
+  airfoil_tc: 0.084                  # S5020 max thickness
   # A straight spanwise spar cannot follow a 30 deg swept wing (it would exit the leading edge at y = 0.14 m),
   # so the wing uses a straight cross spar joining the two booms through the pod, at the chordwise station
   # that maximises the room inside the airfoil over y = 0.035..0.25 (x = 0.18 m aft of the root LE: 9.8 mm),
@@ -62,18 +69,18 @@ airspeed_sensor:        # ADR 0007: fitted. Without it SITL showed synthetic air
 booms:                  # two carbon tubes parallel to x (cut from 1 m tubes)
   half_spacing_rotors: 0.35   # rotors at CG +/- 0.35 m (rear disc mostly behind the trailing edge)
   y: 0.25               # lateral position (+/-); 10" prop inner tip 123 mm from centreline
-  diameter: 0.010       # 10x8 mm tube: first bending mode ~37 Hz (8x6 would be ~26 Hz, too close to the rate loop)
+  diameter: 0.010       # 10x8 mm tube: front-arm first bending mode 25.5 Hz with the motor at the tip (validation V3e; 15 Hz floor). Was mis-stated as ~37 Hz
   inner_diameter: 0.008
   length: 0.85
-  x_front: 0.217         # front end station
+  x_front: 0.218         # front end station
   # rear end = x_front - length
 
 lift_rotors:            # quad X; positions are motor axes. Rotor centroid = design CG (equal hover load)
-  x_front: 0.182        # front disc fully ahead of the wing LE
-  x_rear: -0.518        # rear disc overlaps only the last few cm of the wing (less hover download)
+  x_front: 0.183        # front disc fully ahead of the wing LE
+  x_rear: -0.517        # rear disc overlaps only the last few cm of the wing (less hover download)
   y: 0.25
   z: -0.035             # prop plane above the boom
-  yaw_tilt_deg: 4       # motors tilted about the boom so thrust adds yaw torque in the same sense as prop drag
+  yaw_tilt_deg: 5       # (4 -> 5 deg 2026-11-25: derated props cut yaw authority below 2x the winglet moment, V6c) motors tilted about the boom so thrust adds yaw torque in the same sense as prop drag
                         # (ArduPilot QuadPlane building guide practice); ~3x hover yaw authority, -0.2 % lift
   # ArduPilot QuadPlane motor numbering (Q_FRAME_TYPE=1, X): 1 front-right CCW, 2 rear-left CCW, 3 front-left CW, 4 rear-right CW
 
@@ -84,14 +91,16 @@ pusher:
 
 landing_legs:           # 4 printed PETG legs under the motor mounts
   height: 0.085         # below boom centreline
-  mass_each: 0.005
+  mass_each: 0.008       # 12.5 cm^3 printed PETG at 50 % fill (was 0.005, design review minor item)
 
 propulsion:
   lift_motor: a2212_1000kv
   lift_prop: prop_10x45
-  pusher_motor: a2212_1400kv   # trade study: excess thrust 2.7x at cruise (1000KV+9x6 only 1.9x)
+  pusher_motor: a2212_1400kv   # trade study: best climb at cruise inside the 15 A limit (THR_MAX 85: 1.9x excess, 1.9 m/s)
   pusher_prop: prop_8x6
   esc_max_a: 30.0
+  pusher_thr_max: 0.85  # THR_MAX 85 in sitl/kestrel.parm. On a fresh 12.6 V pack the 1400KV + 8x6 draws 17.5 A at full static
+                        # throttle, over the motor's 15 A continuous (design review K4); 85 % gives 14.9 A
   battery: lipo_3s_2200
 
 motors:                 # budget A2212 class. rm is an EFFECTIVE resistance (winding + ESC + leads + timing losses)
@@ -107,9 +116,17 @@ props:                  # UIUC-database-shaped coefficients scaled to cheap slow
   prop_9x45:  {d: 0.229, ct0: 0.0964, cp0: 0.0308, j0_ct: 0.58, j0_cp: 0.75, mass: 0.010}
   prop_9x6:   {d: 0.229, ct0: 0.1051, cp0: 0.0434, j0_ct: 0.76, j0_cp: 0.95, mass: 0.011}
   prop_8x6:   {d: 0.203, ct0: 0.1095, cp0: 0.0476, j0_ct: 0.85, j0_cp: 1.05, mass: 0.009}
+prop_derate:            # design review K3 (2026-11-25): the table above reproduces the vendor datasheet point, which
+  # implies a static figure of merit of 0.80 for the 10x4.5. Cheap moulded props measure 0.55-0.65 on a thrust stand.
+  # Lift props: cp x1.24 gives 0.65 (the optimistic end of that range), so hover power rises ~24 %.
+  # Pusher: left as tabulated. Hover (static) figure of merit is what the review measured; at cruise the 8x6 model
+  # gives prop efficiency ~0.6, which matches the independent hand check V2c. Bench item B3 measures both.
+  # Replace with measured values after B3 (thrust stand) and re-run sizing, SITL and validate.
+  lift_cp_scale: 1.24
+  pusher_cp_scale: 1.0
 
 batteries:
-  lipo_3s_2200: {cells: 3, capacity_ah: 2.2, r_int: 0.030, mass: 0.185, usable_frac: 0.80, v_cell_nom: 3.75, v_cell_full: 4.20, v_cell_empty: 3.50}
+  lipo_3s_2200: {cells: 3, capacity_ah: 2.2, c_rating: 35, r_int: 0.030, mass: 0.185, usable_frac: 0.80, v_cell_nom: 3.75, v_cell_full: 4.20, v_cell_empty: 3.50}
 
 # Mass items (kg) with station (x, y, z) in body frame. Airframe items from CAD in M1 (cad/build.py writes cad/mass_props.json).
 mass_items:
@@ -117,14 +134,14 @@ mass_items:
   winglets:        {m: 0.012, x: -0.37,  z: -0.04}
   spar_and_glue:   {m: 0.040, x: -0.20,  z: 0.0}   # cross spar at x -0.18 + swept outer spars + glue
   fuselage_pod:    {m: 0.040, x: -0.10,  z: 0.02}
-  booms:           {m: 0.066, x: -0.208,  z: 0.012}   # 2 x 0.75 m x 44 g/m
-  printed_mounts:  {m: 0.040, x: -0.168, z: 0.0}
-  lift_motors:     {m: 0.208, x: -0.168, z: -0.02}   # 4 x 52 g, centroid of front/rear pairs
-  lift_props:      {m: 0.048, x: -0.168, z: -0.04}
-  lift_escs:       {m: 0.100, x: -0.168, z: 0.012}   # 4 x 25 g on booms
+  booms:           {m: 0.075, x: -0.207,  z: 0.012}   # 2 x 0.85 m x 44 g/m (spec-only model; the CAD model uses the tube volume)
+  printed_mounts:  {m: 0.032, x: -0.167, z: 0.0}
+  lift_motors:     {m: 0.208, x: -0.167, z: -0.02}   # 4 x 52 g, centroid of front/rear pairs
+  lift_props:      {m: 0.048, x: -0.167, z: -0.04}
+  lift_escs:       {m: 0.100, x: -0.167, z: 0.012}   # 4 x 25 g on booms
   pusher_motor:    {m: 0.052, x: -0.33,  z: -0.04}
   pusher_prop:     {m: 0.011, x: -0.36,  z: -0.04}
-  landing_legs:    {m: 0.020, x: -0.168, z: 0.06}
+  landing_legs:    {m: 0.032, x: -0.167, z: 0.06}
   pusher_esc:      {m: 0.025, x: -0.24,  z: 0.02}
   servos:          {m: 0.018, x: -0.28,  z: 0.0}
   flight_controller: {m: 0.019, x: -0.110, z: 0.040}   # behind the battery and XT60 (kestrel.interference)
@@ -132,15 +149,18 @@ mass_items:
   airspeed_sensor: {m: 0.010, x: 0.100, z: 0.030}   # pitot + MS4525DO board + hoses (ADR 0007)
   receiver:        {m: 0.003, x: -0.20,  z: 0.02}
   wiring:          {m: 0.040, x: -0.12,  z: 0.02}
-  battery:         {m: 0.185, x: -0.032,  z: 0.03}   # slid fore/aft to set CG (solved for 8 % static margin)
+  battery:         {m: 0.185, x: -0.019,  z: 0.03}   # slid fore/aft to set CG (solved by kestrel.balance for limits.target_static_margin)
 
 limits:
   target_hover_tw: 2.0
   min_endurance_min: 12.0
   reserve_frac: 0.20
-  max_bom_usd: 275.0     # 2026-11-24: +$14-22 airspeed sensor, user chose to fit it (ADR 0007). Before: 250; was 240; +$6-10 for the cross and outer carbon spars added after validation found the straight spar left the swept wing (ADR 0005)
+  max_bom_usd: 285.0     # 2026-11-25: +$10 for review fixes (power harness was missing, 35C pack, 1 m outer-spar tube), ADR 0008. 2026-11-24: +$14-22 airspeed sensor, user chose to fit it (ADR 0007). Before: 250; was 240; +$6-10 for the cross and outer carbon spars added after validation found the straight spar left the swept wing (ADR 0005)
   static_margin: [0.04, 0.16]      # minimum LOCAL margin -dCm/dCL over 2..15 deg alpha must stay inside
-  target_static_margin: 0.05       # applied to the minimum local margin
+  target_static_margin: 0.055      # applied to the minimum local margin. 5.5 % so a 3 mm CG error (BENCH B2 tolerance,
+                                   # 1.1 % of MAC) still leaves >= 4 % (design review K5; was 5.0 %)
+  cg_tolerance_m: 0.003
+  min_cruise_climb_mps: 1.5   # pusher alone at THR_MAX, at cruise speed (ADR 0008; replaced 'excess thrust >= 2')
   max_stall_mps: 10.5   # TRIMMED stall (tailless wing); quadplane lifts take over below ARSPD_FBW_MIN = 12 m/s
 
 mission_profile:        # for endurance estimate

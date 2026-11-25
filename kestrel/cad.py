@@ -28,6 +28,11 @@ SHEET = (762.0, 508.0)    # mm, 30 x 20 in
 PROP_MARGIN = 0.006       # m, minimum clearance around a prop disc
 
 # Electronics / point items: (mass kg, size m (x,y,z), FLU centre)
+
+MOUNT_MASS = 0.008     # printed motor mount, 12.0 cm^3 at 50 % of PETG density
+CLAMP_MASS = 0.008     # printed boom clamp with outer-spar socket, 12.0 cm^3
+PYLON_MASS = 0.014     # printed pusher pylon, 22.0 cm^3
+
 def _items(s):
     pod = s["fuselage"]
     zc = -0.02
@@ -255,12 +260,18 @@ def mass_properties(s, parts):
     prop_m = s["props"][s["propulsion"]["lift_prop"]]["mass"]
     for k in ("FR", "RL", "FL", "RR"):
         add(f"motor_{k}", motor_m + prop_m, parts[f"motor_{k}"])
-        add(f"mount_{k}", 0.010, parts[f"mount_{k}"])
+        add(f"mount_{k}", MOUNT_MASS, parts[f"mount_{k}"])
         add(f"leg_{k}", s["landing_legs"]["mass_each"], parts[f"leg_{k}"])
         c = parts[f"motor_{k}"].center()
         add(f"esc_{k}", 0.025, bd.Box(0.045, 0.025, 0.008).translate((c.X - 0.06 * np.sign(c.X + 0.119), c.Y, -0.012)))
-    add("pusher_motor", s["motors"][s["propulsion"]["pusher_motor"]]["mass"] + s["props"][s["propulsion"]["pusher_prop"]]["mass"] + 0.008,
-        parts["pusher_motor"])
+    # printed parts at 50 % of solid PETG (3 walls + 25 % infill): see tests/test_detail.py, which checks these
+    # against the exported part volumes (cad/build/manifest.json)
+    add("pusher_motor", s["motors"][s["propulsion"]["pusher_motor"]]["mass"] + s["props"][s["propulsion"]["pusher_prop"]]["mass"]
+        + PYLON_MASS, parts["pusher_motor"])
+    cs = s["structure"]["cross_spar"]
+    for sy in (1, -1):    # boom clamps with the outer-spar socket (review K8)
+        add(f"clamp_{'L' if sy > 0 else 'R'}", CLAMP_MASS,
+            bd.Box(0.05, 0.02, 0.03).translate((-cs["x_aft"] - 0.018, sy * s["booms"]["y"], 0.0)))
     for k, (m, size, c) in _items(s).items():
         add(k, m, parts[k])
     M = sum(c[1] for c in comps)

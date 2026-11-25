@@ -5,7 +5,7 @@ from kestrel import propulsion as P
 
 
 def test_datasheet_point():
-    m, p = P.get("motor", "a2212_1000kv"), P.get("prop", "prop_10x45")
+    m, p = P.get("motor", "a2212_1000kv"), P.get("prop", "prop_10x45", raw=True)
     op = P.operating_point(m, p, 11.1)
     assert op.rpm == pytest.approx(7600, rel=0.05)
     assert op.current == pytest.approx(11.5, rel=0.05)
@@ -14,9 +14,16 @@ def test_datasheet_point():
 
 @pytest.mark.parametrize("prop", ["prop_10x45", "prop_9x45", "prop_9x6", "prop_8x6"])
 def test_figure_of_merit_physical(prop):
-    p = P.get("prop", prop)
-    fom = p.ct0 ** 1.5 / (2 ** 0.5 * p.cp0)
-    assert 0.4 < fom < 0.8
+    """The derated props must sit in the measured range for cheap moulded props (design review K3)."""
+    # high-pitch props (9x6, 8x6) have a lower static figure of merit by nature; they are judged in cruise
+    assert 0.45 <= P.figure_of_merit(P.get("prop", prop, role="lift")) <= 0.68
+
+
+def test_derate_lowers_static_thrust_per_watt():
+    m = P.get("motor", "a2212_1000kv")
+    raw = P.operating_point(m, P.get("prop", "prop_10x45", raw=True), 11.1)
+    der = P.operating_point(m, P.get("prop", "prop_10x45"), 11.1)
+    assert der.thrust / der.p_elec < 0.95 * raw.thrust / raw.p_elec
 
 
 def test_thrust_monotonic_in_throttle_and_drops_with_inflow():

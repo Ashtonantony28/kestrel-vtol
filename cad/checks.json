@@ -2,9 +2,9 @@
  "prop_collisions": [],
  "disc_wing_overlap_frac": {
   "FR": 0.0,
-  "RL": 0.06645204777820815,
+  "RL": 0.06950014081999238,
   "FL": 0.0,
-  "RR": 0.06645204777820819
+  "RR": 0.06950014081999224
  },
  "ground_z": -0.097,
  "pusher_tip_clearance_m": 0.0355,
@@ -16,24 +16,24 @@
   "outer_spar_L": 1.0,
   "outer_spar_R": 1.0
  },
- "battery_x_for_target_sm": -0.032572569532260294,
- "cg_target_frd_x": -0.16826407476707725,
- "static_margin_cad": 0.09204853430541206,
- "static_margin_min_local_cad": 0.050364050868249736,
- "mass_cad_kg": 1.0654615654757582,
- "mass_budget_kg": 1.064,
- "mass_error_frac": 0.0013736517629305833,
+ "battery_x_for_target_sm": -0.018866018480168688,
+ "cg_target_frd_x": -0.16691535044647396,
+ "static_margin_cad": 0.09660947322071191,
+ "static_margin_min_local_cad": 0.0549168412260983,
+ "mass_cad_kg": 1.0914615654757582,
+ "mass_budget_kg": 1.077,
+ "mass_error_frac": 0.013427637396247194,
  "cg_frd": [
-  -0.16816465741885891,
-  7.310281919690345e-18,
-  0.006769002676762205
+  -0.16693805997830982,
+  1.0340210978597434e-17,
+  0.006963705417828228
  ],
  "sheets": 5,
  "sheets_fit": true,
  "sheets_overlap": false,
  "template_pages_letter": 40,
  "printed_part_mass_kg": {
-  "motor_mount": 0.00687821119613858,
+  "motor_mount": 0.00686717894654071,
   "leg": 0.007168033183939624,
   "pusher_mount": 0.008833590552221814
  }

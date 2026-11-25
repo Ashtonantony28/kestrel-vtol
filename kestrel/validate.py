@@ -182,6 +182,49 @@ def v3_structure(s, sz, mp):
     sig_os = M_out * (os_["od"] / 2) / I2
     out.append(_check("V3b outer spar bending stress at ultimate load", sig_os / 1e6, None, hi=sig / 1e6, unit=" MPa",
                       note=f"outer panel carries {frac * 100:.0f} % of lift; M = {M_out:.2f} N m"))
+    # design review K8: torsion in the cross spar. The printed clamp joins boom, cross spar and outer-spar root,
+    # so two torques reach the cross spar through it: (a) in hover, full pitch authority (front motor at full
+    # thrust, rear at idle) on a boom; (b) in a pull-up, the outer panel's lift acting at its quarter chord, aft
+    # of the cross spar. Conservative: the spar is fixed at the pod centreline, torque over its half span.
+    tsw = math.tan(math.radians(w["le_sweep_deg"]))
+    y_c = yb + 0.45 * (s2 - yb)
+    dx_out = (y_c * tsw + 0.25 * c_at(y_c)) - cs["x_aft"]
+    L_f0 = s["lift_rotors"]["x_front"] + cs["x_aft"]
+    L_r0 = -cs["x_aft"] - s["lift_rotors"]["x_rear"]
+    T_idle = 0.12 ** 2 * T_max                                 # Q_M_SPIN_MIN 12 %: thrust ~ duty^2
+    Tq_hover = T_max * L_f0 - T_idle * L_r0
+    Tq_flight = n_ult / st["ultimate_factor"] * W * frac / 2 * dx_out
+    Tq = max(Tq_hover, Tq_flight) * st["ultimate_factor"]
+    # Torsion path: the cross spar in parallel with the inboard wing's closed foamboard box (forward of the
+    # elevon hinge), both fixed at the pod side and loaded at the boom. Foamboard shear stiffness is a
+    # conservative guess (half of paper faces alone), measured by bench item B18.
+    L_t = yb - s["fuselage"]["width"] / 2
+    y_m = s["fuselage"]["width"] / 2 + L_t / 2
+    c_m = c_at(y_m)
+    tc = float(st.get("airfoil_tc", 0.084))
+    c_box = (1 - w["elevon_chord_frac"]) * c_m
+    A_box = 0.6 * c_box * tc * c_m                       # enclosed area of the folded section (~0.6 of the bounding box)
+    perim = 2.05 * c_box
+    Gt_foam = float(st["foamboard_shear_stiffness"])     # N/m
+    GJ_box = 4 * A_box ** 2 * Gt_foam / perim
+    GJ_tube = Gt * J
+    Tq_lim = max(Tq_hover, Tq_flight)
+    tau = Tq * GJ_tube / (GJ_box + GJ_tube) * (cs["od"] / 2) / J
+    tau_allow = float(st.get("tube_tau_allow", 40e6))
+    q_box = Tq * GJ_box / (GJ_box + GJ_tube) / (2 * A_box)
+    case = "hover pitch command" if Tq_hover > Tq_flight else "outer panel lift"
+    out.append(_check("V3g cross spar shear stress in torsion at ultimate load", tau / 1e6, None, hi=tau_allow / 1e6, unit=" MPa",
+                      note=f"governing case {case}: T = {Tq:.2f} N m incl. x{st['ultimate_factor']}; tube takes "
+                           f"{GJ_tube / (GJ_box + GJ_tube) * 100:.0f} %, wing box the rest"))
+    out.append(_check("V3h inboard wing box shear flow at ultimate torque", q_box / 1000, None,
+                      hi=float(st["foamboard_shear_flow_allow"]) / 1000, unit=" N/mm"))
+    twist_cs = Tq_lim * L_t / (GJ_box + GJ_tube)
+    out.append(_check("V3i boom pitch twist at the clamp, limit torque (cross spar + wing box)", math.degrees(twist_cs), None,
+                      hi=2.0, unit=" deg", note=f"tube alone would twist {math.degrees(Tq_lim * L_t / GJ_tube):.0f} deg: the "
+                                                 "boom must be glued to the wing along its whole chord; bench item B18"))
+    info["cross_spar_torsion"] = {"T_hover": Tq_hover, "T_flight": Tq_flight, "dx_outer_panel_m": dx_out,
+                                  "GJ_box": GJ_box, "GJ_tube": GJ_tube, "tau_MPa": tau / 1e6, "q_box_N_per_mm": q_box / 1000,
+                                  "twist_deg": math.degrees(twist_cs)}
     # booms: front arm cantilevered from the cross-spar clamp (conservative: no support from the foam)
     bm = s["booms"]
     Ib, Jb, Ab = _tube(bm["diameter"], bm["inner_diameter"])
@@ -206,7 +249,7 @@ def v3_structure(s, sz, mp):
         q_full = (sz["lift"]["full_current_each_a"] - lm.i0) / lm.kv_rad     # motor torque constant 1/Kv
         twist = q_full * L / (Gt * Jb)
         out.append(_check(f"V3f boom {name} arm twist under full motor torque", math.degrees(twist), None, hi=1.0, unit=" deg",
-                          note="vs 4 deg yaw tilt; pultruded tube (G 4.5 GPa)"))
+                          note=f"vs {s['lift_rotors'].get('yaw_tilt_deg', 0):.0f} deg yaw tilt; pultruded tube (G 4.5 GPa)"))
     return out, info
 
 
@@ -215,17 +258,20 @@ def v3_structure(s, sz, mp):
 def v4_limits(s, sz):
     out = []
     lp = P.get("prop", s["propulsion"]["lift_prop"], s)
-    pp = P.get("prop", s["propulsion"]["pusher_prop"], s)
+    pp = P.get("prop", s["propulsion"]["pusher_prop"], s, role="pusher")
     # full-throttle rpm from the propulsion model (lift) and static pusher
     lm = P.get("motor", s["propulsion"]["lift_motor"], s)
     pm = P.get("motor", s["propulsion"]["pusher_motor"], s)
     batt = P.get("battery", s["propulsion"]["battery"], s)
     op_l = P.operating_point(lm, lp, batt.cells * batt.v_cell_full)
-    op_p = P.operating_point(pm, pp, batt.cells * batt.v_cell_full)
+    thr_max = s["propulsion"].get("pusher_thr_max", 1.0)          # THR_MAX caps the pusher duty (review K4)
+    op_p = P.operating_point(pm, pp, thr_max * batt.cells * batt.v_cell_full)
     for name, op, pr in (("lift", op_l, lp), ("pusher", op_p, pp)):
         tip = math.pi * pr.d * op.rpm / 60
         out.append(_check(f"V4a {name} prop tip Mach at full throttle", tip / 340.3, None, hi=0.5))
         out.append(_check(f"V4b {name} motor current at full throttle vs 30 A ESC", op.current, None, hi=30 / 1.5, unit=" A"))
+    out.append(_check("V4e pusher motor current at THR_MAX, full pack, static vs motor continuous rating", op_p.current, None,
+                      hi=pm.i_max_cont, unit=" A", note=f"THR_MAX {thr_max * 100:.0f} (design review K4)"))
     i_peak = 4 * op_l.current + 0.5 * op_p.current      # transition: lift motors high while the pusher spools up
     c_rate = s["batteries"][s["propulsion"]["battery"]].get("c_rating", 30)   # cheapest 3S 2200 packs are rated 25-30C
     out.append(_check("V4c peak pack current (4 lift full + pusher half) vs pack rating", i_peak, None,
