@@ -23,9 +23,9 @@ MIXING_GAIN 0.5
 SERVO3_MIN 1000         # pusher ESC calibrated 1000-2000 us (default 1100 would idle the pusher at 10 %)
 SERVO3_TRIM 1000
 SERVO3_MAX 2000
-# --- airspeed: no sensor (synthetic airspeed from GPS + wind estimate) ---
-ARSPD_TYPE 0
-ARSPD_USE 0
+# --- airspeed: MS4525DO pitot on I2C (ADR 0007). Sensorless synthetic airspeed read ~1.2 m/s low in SITL ---
+ARSPD_TYPE 1             # SITL runs override this to 100 (simulated sensor fed by kestrel physics)
+ARSPD_USE 1
 AIRSPEED_MIN 12          # trimmed stall 9.6 m/s (aero/tables.json) x 1.25
 AIRSPEED_CRUISE 14
 AIRSPEED_MAX 20

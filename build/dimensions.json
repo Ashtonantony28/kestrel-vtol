@@ -38,7 +38,7 @@
   {
    "group": "Overall",
    "name": "All-up weight",
-   "value": 1055,
+   "value": 1065,
    "unit": "g",
    "note": "CAD mass properties"
   },
@@ -257,7 +257,21 @@
    "name": "Battery (L × W × H)",
    "value": "105.0 × 34.0 × 24.0",
    "unit": "mm",
-   "note": "centre 19.0 mm behind root LE; slide to balance"
+   "note": "centre 32.0 mm behind root LE; slide to balance"
+  },
+  {
+   "group": "Pod",
+   "name": "Pitot tube (OD × length)",
+   "value": "4.0 × 90.0",
+   "unit": "mm",
+   "note": "tip 50.0 mm ahead of the nose, on the centreline (ADR 0007)"
+  },
+  {
+   "group": "Pod",
+   "name": "Airspeed sensor board (L × W × H)",
+   "value": "26.0 × 18.0 × 8.0",
+   "unit": "mm",
+   "note": "centre -68.0 mm behind root LE (negative = ahead), on a 4.0 mm foam pad"
   },
   {
    "group": "Booms and spars",

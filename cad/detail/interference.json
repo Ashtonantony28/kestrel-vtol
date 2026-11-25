@@ -1,5 +1,5 @@
 {
- "parts": 67,
+ "parts": 70,
  "invalid": [],
  "conflicts": [],
  "embeds": [
@@ -149,9 +149,9 @@
   },
   {
    "a": "pod",
-   "b": "strap",
-   "mm3": 30.7,
-   "build": "Velcro strap passes through two slots in the pod floor"
+   "b": "pitot",
+   "mm3": 196.0,
+   "build": "pitot tube through a 4 mm hole drilled in the pod nose, glued"
   },
   {
    "a": "pod",
@@ -170,6 +170,18 @@
    "b": "cross_spar",
    "mm3": 23.3,
    "build": "8 mm holes through both pod walls"
+  },
+  {
+   "a": "pitot",
+   "b": "pitot_hose",
+   "mm3": 6.8,
+   "build": "silicone hoses pushed onto the pitot nipples"
+  },
+  {
+   "a": "airspeed_sensor",
+   "b": "pitot_hose",
+   "mm3": 28.3,
+   "build": "silicone hoses pushed onto the sensor ports"
   },
   {
    "a": "motor_FR",
@@ -241,13 +253,6 @@
    "ok": true
   },
   {
-   "part": "prop disc RL",
-   "closest": "wire_RL",
-   "gap_mm": 32.1,
-   "required_mm": 6.0,
-   "ok": true
-  },
-  {
    "part": "prop disc FR",
    "closest": "wire_FR",
    "gap_mm": 32.1,
@@ -257,6 +262,13 @@
   {
    "part": "prop disc RR",
    "closest": "wire_RR",
+   "gap_mm": 32.1,
+   "required_mm": 6.0,
+   "ok": true
+  },
+  {
+   "part": "prop disc RL",
+   "closest": "wire_RL",
    "gap_mm": 32.1,
    "required_mm": 6.0,
    "ok": true

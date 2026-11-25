@@ -126,17 +126,18 @@ def main():
     ap.add_argument("--n", type=int, default=60)
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--only", default=None, help="run only cases whose name contains this text")
-    ap.add_argument("--airspeed-sensor", action="store_true", help="fit the optional pitot sensor (results go to <suite>_pitot)")
+    ap.add_argument("--no-airspeed-sensor", action="store_true",
+                    help="fly without the pitot (sensorless comparison, results go to <suite>_nopitot); default follows the spec")
     a = ap.parse_args()
     js = {"wind": wind_suite, "faults": fault_suite, "endurance": endurance_suite}.get(a.suite)
     jl = js() if js else mc_suite(a.n)
     if a.only:
         jl = [j for j in jl if a.only in j["name"]]
     name = a.suite
-    if a.airspeed_sensor:
+    if a.no_airspeed_sensor:
         for j in jl:
-            j["airspeed_sensor"] = True
-        name += "_pitot"
+            j["airspeed_sensor"] = False
+        name += "_nopitot"
     run_suite(name, jl, a.jobs, merge=bool(a.only))
 
 

@@ -48,6 +48,17 @@ fuselage:               # foam pod on the wing centreline carrying battery + avi
   height: 0.06
   nose_x: 0.13          # pod nose is 13 cm ahead of root LE (battery bay)
 
+airspeed_sensor:        # ADR 0007: fitted. Without it SITL showed synthetic airspeed ~1.2 m/s low: fast cruise (-10 % endurance)
+  fitted: true          # and a false transition-fail in a 10 m/s beam wind. MS4525DO I2C board + pitot-static tube.
+  ardupilot_type: 1     # ARSPD_TYPE 1 = I2C MS4525 on the real aircraft (SITL uses 100, fed by our physics)
+  protrusion: 0.050     # pitot tip ahead of the pod nose, m (on the centreline, between the front prop discs)
+  pitot_length: 0.090
+  pitot_od: 0.004
+  pitot_z: -0.014       # FLU, nose centre
+  board: [0.026, 0.018, 0.008]
+  board_x: 0.068        # on a 4 mm foam pad on the pod floor, ahead of the battery
+  pad: 0.004
+
 booms:                  # two carbon tubes parallel to x (cut from 1 m tubes)
   half_spacing_rotors: 0.35   # rotors at CG +/- 0.35 m (rear disc mostly behind the trailing edge)
   y: 0.25               # lateral position (+/-); 10" prop inner tip 123 mm from centreline
@@ -118,15 +129,16 @@ mass_items:
   servos:          {m: 0.018, x: -0.28,  z: 0.0}
   flight_controller: {m: 0.019, x: -0.110, z: 0.040}   # behind the battery and XT60 (kestrel.interference)
   gps:             {m: 0.012, x: -0.135, z: -0.04}    # on a mast ahead of the cross spar
+  airspeed_sensor: {m: 0.010, x: 0.100, z: 0.030}   # pitot + MS4525DO board + hoses (ADR 0007)
   receiver:        {m: 0.003, x: -0.20,  z: 0.02}
   wiring:          {m: 0.040, x: -0.12,  z: 0.02}
-  battery:         {m: 0.185, x: -0.019,  z: 0.03}   # slid fore/aft to set CG (solved for 8 % static margin)
+  battery:         {m: 0.185, x: -0.032,  z: 0.03}   # slid fore/aft to set CG (solved for 8 % static margin)
 
 limits:
   target_hover_tw: 2.0
   min_endurance_min: 12.0
   reserve_frac: 0.20
-  max_bom_usd: 250.0     # was 240; +$6-10 for the cross and outer carbon spars added after validation found the straight spar left the swept wing (ADR 0005)
+  max_bom_usd: 275.0     # 2026-11-24: +$14-22 airspeed sensor, user chose to fit it (ADR 0007). Before: 250; was 240; +$6-10 for the cross and outer carbon spars added after validation found the straight spar left the swept wing (ADR 0005)
   static_margin: [0.04, 0.16]      # minimum LOCAL margin -dCm/dCL over 2..15 deg alpha must stay inside
   target_static_margin: 0.05       # applied to the minimum local margin
   max_stall_mps: 10.5   # TRIMMED stall (tailless wing); quadplane lifts take over below ARSPD_FBW_MIN = 12 m/s

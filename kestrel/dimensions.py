@@ -102,6 +102,13 @@ def compute(s=None, P=None):
     hb = P["hatch"].bounding_box()
     add(G, "Hatch (L × W)", f"{mm(hb.size.X)} × {mm(hb.size.Y)}", "mm")
     add(G, "Battery (L × W × H)", f"{mm(bat.size.X)} × {mm(bat.size.Y)} × {mm(bat.size.Z)}", "mm", f"centre {mm(-bat.center().X)} mm behind root LE; slide to balance")
+    asp = s.get("airspeed_sensor") or {}
+    if asp.get("fitted") and "pitot" in P:
+        add(G, "Pitot tube (OD × length)", f"{mm(asp['pitot_od'])} × {mm(asp['pitot_length'])}", "mm",
+            f"tip {mm(asp['protrusion'])} mm ahead of the nose, on the centreline (ADR 0007)")
+        sb = P["airspeed_sensor"].bounding_box()
+        add(G, "Airspeed sensor board (L × W × H)", " × ".join(str(mm(v)) for v in asp["board"]), "mm",
+            f"centre {mm(-sb.center().X)} mm behind root LE (negative = ahead), on a {mm(asp.get('pad', 0.004))} mm foam pad")
     G = "Booms and spars"
     add(G, "Boom tube (OD / ID × length)", f"{mm(bm['diameter'])} / {mm(bm['inner_diameter'])} × {mm(bm['length'])}", "mm", "carbon, cut from 1 m")
     add(G, "Boom lateral position (each side) / spacing", f"{mm(bm['y'])} / {mm(2 * bm['y'])}", "mm")

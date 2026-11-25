@@ -81,9 +81,10 @@
    "pusher_shaft",
    "pushrod_L",
    "pushrod_R",
-   "gps_mast"
+   "gps_mast",
+   "pitot"
   ],
-  "triangles": 11450
+  "triangles": 12774
  },
  "props": {
   "parts": [
@@ -124,9 +125,10 @@
    "esc_FL",
    "esc_RR",
    "servo_L",
-   "servo_R"
+   "servo_R",
+   "airspeed_sensor"
   ],
-  "triangles": 7456
+  "triangles": 8196
  },
  "wiring": {
   "parts": [
@@ -137,17 +139,18 @@
    "harness_L",
    "harness_R",
    "ant_A",
-   "ant_B"
+   "ant_B",
+   "pitot_hose"
   ],
-  "triangles": 2880
+  "triangles": 7384
  },
  "_markers": {
   "cg_mm": [
-   -168.19274614814884,
-   -7.377641120181535e-15,
-   -6.548899945567381
+   -168.16465741885892,
+   -7.310281919690346e-15,
+   -6.769002676762205
   ],
-  "np_x_mm": -193.2804703350576,
-  "mass_kg": 1.0554615654757582
+  "np_x_mm": -193.30186209584303,
+  "mass_kg": 1.0654615654757582
  }
 }

@@ -15,7 +15,7 @@ sideways from the centreline, and up from the root chord line. Drawing: `cad/dra
 | Overall length (front prop tip to rear prop tip) | 954.0 mm |  |
 | Overall height (ground to top of the pusher prop arc) | 238.5 mm |  |
 | Height to winglet tip (ground to top) | 184.8 mm |  |
-| All-up weight | 1055 g | CAD mass properties |
+| All-up weight | 1065 g | CAD mass properties |
 | CG station (behind root LE) | 168.2 mm | balance point: mark it under both wing roots |
 | Neutral point (behind root LE) | 193.3 mm | static margin 9.4 % MAC |
 
@@ -66,7 +66,9 @@ sideways from the centreline, and up from the root chord line. Drawing: `cad/dra
 | Tail behind root LE | 390.0 mm |  |
 | Nose corner radius | 22.0 mm |  |
 | Hatch (L × W) | 260.0 × 66.4 mm |  |
-| Battery (L × W × H) | 105.0 × 34.0 × 24.0 mm | centre 19.0 mm behind root LE; slide to balance |
+| Battery (L × W × H) | 105.0 × 34.0 × 24.0 mm | centre 32.0 mm behind root LE; slide to balance |
+| Pitot tube (OD × length) | 4.0 × 90.0 mm | tip 50.0 mm ahead of the nose, on the centreline (ADR 0007) |
+| Airspeed sensor board (L × W × H) | 26.0 × 18.0 × 8.0 mm | centre -68.0 mm behind root LE (negative = ahead), on a 4.0 mm foam pad |
 
 ## Booms and spars
 

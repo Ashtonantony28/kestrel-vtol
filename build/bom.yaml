@@ -10,6 +10,7 @@ aircraft:
   - {item: "Props 10x4.5 CW/CCW (lift) + 8x6 (pusher), with spares", qty: 1, low: 8, high: 12}
   - {item: "SpeedyBee F405 Wing Mini", qty: 1, low: 40, high: 47, checked: "$39.99-46.99"}
   - {item: "Generic M10 GPS with compass", qty: 1, low: 15, high: 22}
+  - {item: "MS4525DO I2C airspeed sensor with pitot-static tube and hose (ADR 0007)", qty: 1, low: 14, high: 22, note: "generic clone; Matek ASPD-4525 is ~$35"}
   - {item: "ELRS 2.4 GHz receiver (aircraft)", qty: 1, low: 10, high: 13}
   - {item: "3S 2200 mAh LiPo 2-pack", qty: 1, low: 19, high: 35, checked: "Ovonic 2-pack $19.19"}
   - {item: "Wire, XT60, heatshrink", qty: 1, low: 5, high: 8}

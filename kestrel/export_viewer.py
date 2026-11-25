@@ -28,13 +28,13 @@ GROUPS = {
     "printed": ["mount_FR", "mount_RL", "mount_FL", "mount_RR", "leg_FR", "leg_RL", "leg_FL", "leg_RR",
                 "clamp_L", "clamp_R", "pusher_mount", "horn_L", "horn_R"],
     "motors": ["motor_FR", "motor_RL", "motor_FL", "motor_RR", "pusher_motor"],
-    "hardware": ["shaft_FR", "shaft_RL", "shaft_FL", "shaft_RR", "pusher_shaft", "pushrod_L", "pushrod_R", "gps_mast"],
+    "hardware": ["shaft_FR", "shaft_RL", "shaft_FL", "shaft_RR", "pusher_shaft", "pushrod_L", "pushrod_R", "gps_mast", "pitot"],
     "props": ["prop_FR", "prop_RL", "prop_FL", "prop_RR", "prop_pusher"],
     "discs": ["propdisc_FR", "propdisc_RL", "propdisc_FL", "propdisc_RR", "propdisc_pusher"],
     "battery": ["battery", "strap", "xt60"],
     "electronics": ["flight_controller", "receiver", "gps", "pusher_esc", "esc_FR", "esc_RL", "esc_FL", "esc_RR",
-                    "servo_L", "servo_R"],
-    "wiring": ["wire_FR", "wire_RL", "wire_FL", "wire_RR", "harness_L", "harness_R", "ant_A", "ant_B"],
+                    "servo_L", "servo_R", "airspeed_sensor"],
+    "wiring": ["wire_FR", "wire_RL", "wire_FL", "wire_RR", "harness_L", "harness_R", "ant_A", "ant_B", "pitot_hose"],
 }
 TOL = {"wing": 0.0003, "elevons": 0.0003, "pod": 0.0006, "props": 0.0008, "discs": 0.001, "battery": 0.0008,
        "motors": 0.0004, "hardware": 0.0004}

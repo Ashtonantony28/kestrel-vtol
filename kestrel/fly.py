@@ -54,15 +54,19 @@ MISSIONS = {
 class Run:
     def __init__(self, mission="basic", instance=0, speedup=10, wind=(0.0, 0.0, 0.0), gust=0.0, seed=0,
                  disp: Dispersion | None = None, name=None, timeout_s=900, rc_loss_at=None, extra_params=None, verbose=True,
-                 airspeed_sensor=False):
+                 airspeed_sensor=None):
         self.mission, self.inst, self.speedup = mission, instance, speedup
         self.wind, self.gust, self.seed, self.disp = wind, gust, seed, disp
         self.name = name or f"{mission}_i{instance}"
         self.timeout_s, self.rc_loss_at, self.extra = timeout_s, rc_loss_at, extra_params or {}
         self.verbose = verbose
+        if airspeed_sensor is None:   # default: what the spec says is fitted (ADR 0007)
+            airspeed_sensor = bool((S.load().get("airspeed_sensor") or {}).get("fitted"))
         self.airspeed_sensor = airspeed_sensor
-        if airspeed_sensor:   # the optional ~$15 pitot (PLAN decision): SITL sensor fed from our physics
+        if airspeed_sensor:   # SITL airspeed sensor fed from our physics
             self.extra = {"ARSPD_TYPE": 100, "ARSPD_USE": 1, **self.extra}
+        else:                 # sensorless: synthetic airspeed from GPS and the wind estimate
+            self.extra = {"ARSPD_TYPE": 0, "ARSPD_USE": 0, **self.extra}
         self.events = []
 
     def log(self, *a):

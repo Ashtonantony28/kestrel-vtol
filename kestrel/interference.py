@@ -78,6 +78,9 @@ ALLOWED = [
     ("xt60", "battery", "connector on the battery lead"),
     ("strap", "battery", "strap around the battery"),
     ("strap", "pod", "Velcro strap passes through two slots in the pod floor"),
+    ("pitot", "pod", "pitot tube through a 4 mm hole drilled in the pod nose, glued"),
+    ("pitot_hose", "pitot", "silicone hoses pushed onto the pitot nipples"),
+    ("pitot_hose", "airspeed_sensor", "silicone hoses pushed onto the sensor ports"),
 ]
 
 

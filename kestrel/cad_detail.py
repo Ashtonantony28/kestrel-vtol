@@ -304,6 +304,34 @@ def build_detail(s=None):
 
     # --- avionics -----------------------------------------------------------------------------
     P["flight_controller"] = simple["flight_controller"]
+    # airspeed sensor (ADR 0007): pitot-static tube out of the pod nose on the centreline, ahead of the foam and
+    # between the front prop discs; MS4525DO board on the pod floor in front of the battery; two silicone hoses
+    aspd = s.get("airspeed_sensor")
+    if aspd and aspd.get("fitted"):
+        tip_x = fu["nose_x"] + aspd["protrusion"]
+        pz = aspd["pitot_z"]
+        tube = bd.Cylinder(aspd["pitot_od"] / 2, aspd["pitot_length"], rotation=(0, 90, 0),
+                           align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MAX)).translate((tip_x, 0, pz))
+        cone = bd.Cone(aspd["pitot_od"] / 2, aspd["pitot_od"] / 5, 0.004, rotation=(0, 90, 0),
+                       align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN)).translate((tip_x, 0, pz))
+        P["pitot"] = tube + cone
+        bl, bw, bh = aspd["board"]
+        bx = aspd["board_x"]
+        # seat: a foam pad on the rounded pod floor, so the board corners clear the floor radius
+        floor_z = (pod & bd.Box(0.004, 0.02, 0.2).translate((bx, 0, 0))).bounding_box().min.Z + 0.002 + aspd.get("pad", 0.004)
+        board = bd.Box(bl, bw, bh, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN)).translate((bx, 0, floor_z + 0.0005))
+        ports = [bd.Cylinder(0.0015, 0.004, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN)).translate((bx + 0.006, yy, floor_z + 0.0005 + bh))
+                 for yy in (-0.003, 0.003)]
+        P["airspeed_sensor"] = board.fuse(*ports)
+        hoses = []
+        back_x = tip_x - aspd["pitot_length"]
+        for yy in (-0.003, 0.003):
+            a = bd.Vector(back_x + 0.003, yy, pz)
+            b_ = bd.Vector(bx + 0.006, yy, floor_z + 0.0005 + bh + 0.002)
+            mid = bd.Vector(back_x - 0.012, yy, pz - 0.004)
+            path = bd.Spline(a, mid, b_, tangents=((-1, 0, 0), (0, 0, -1)))
+            hoses.append(bd.sweep(bd.Plane(origin=a, z_dir=(-1, 0, 0)) * bd.Circle(0.00175), path=path))
+        P["pitot_hose"] = bd.Compound(children=[h.solid() if hasattr(h, "solid") else h for h in hoses])
     P["receiver"] = simple["receiver"]
     rb = simple["receiver"].bounding_box()
     for k, ang in (("ant_A", 35), ("ant_B", -35)):          # 2.4 GHz antennas splayed below the pod

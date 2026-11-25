@@ -32,7 +32,7 @@ def _items(s):
     pod = s["fuselage"]
     zc = -0.02
     bx = s["mass_items"]["battery"]["x"]
-    return {
+    items = {
         # battery on the pod floor (inner floor z = -0.048); FC behind it, clear of the battery (the earlier
         # stacking overlapped it, found by kestrel.interference), with 20 mm for the XT60 between them; GPS ahead of the cross spar at x = -0.18
         "battery": (s["batteries"][s["propulsion"]["battery"]]["mass"], (0.105, 0.034, 0.024), (bx, 0.0, -0.034)),
@@ -43,6 +43,11 @@ def _items(s):
         "pusher_esc": (0.025, (0.045, 0.025, 0.008), (-0.24, 0.0, zc)),
         "servos": (0.018, (0.023, 0.012, 0.022), (-0.28, 0.0, 0.0)),
     }
+    a = s.get("airspeed_sensor")
+    if a and a.get("fitted"):   # ADR 0007: pitot + board + hoses lumped as one block in the pod nose
+        mi = s["mass_items"]["airspeed_sensor"]
+        items["airspeed_sensor"] = (mi["m"], (0.06, 0.018, 0.02), (mi["x"], 0.0, -mi["z"]))
+    return items
 
 
 def mh45_xy():

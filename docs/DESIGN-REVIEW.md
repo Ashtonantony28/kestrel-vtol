@@ -1,7 +1,7 @@
 # Kestrel design review (M0–M4 complete 2026-11-22; independent validation 2026-11-23)
 
 **Verdict:** the lean v2 design closes. On paper and in simulation it meets every sizing target. It flies
-ArduPlane 4.7.3 missions hands-off, with no airspeed sensor, in winds up to 10 m/s. It survives the
+ArduPlane 4.7.3 missions hands-off in winds up to 10 m/s. Since 2026-11-24 that needs the $14–22 airspeed sensor (ADR 0007); without it the limit is 7 m/s. It survives the
 single failures that a quad can survive, and lands with a 20 % battery reserve after about 18 minutes.
 
 The most useful result is the list of seven problems that the first parameter file had (ADR 0004).
@@ -46,7 +46,7 @@ What simulation cannot prove is listed at the end. The bench checklist (`build/B
 |---|---|---|
 | Calm | pass, lands 0.03 m from home | `docs/img/mission_calm.png` |
 | Wind, 0/4/7/10 m/s steady + 1.5 m/s gusts, two directions | **7/7**; worst landing 1.9 m | `docs/img/mission_wind7.png` |
-| Same, with the optional $15 airspeed sensor | 7/7 | the sensor is *not* needed by this test |
+| Same, with the optional $15 airspeed sensor | 7/7 | at the time the sensor was *not* needed; superseded by §8 and ADR 0007 |
 | Dead pusher in cruise | pass, lands 0.03 m | the transition times out, and it flies home as a quad |
 | RC link lost in cruise | pass | RTL, VTOL landing at home |
 | Left elevon stuck in cruise | pass | the lift motors catch the slow sink below 15 m |
@@ -154,3 +154,28 @@ Faults found and fixed:
 Outputs: `docs/DIMENSIONS.md` (63 dimensions), `cad/drawings/kestrel_drawings.pdf` (three A3 sheets),
 `cad/detail/interference.json`, and the browser viewer in `cad/viewer/`. `tests/test_detail.py` keeps the
 audit green.
+
+## 8. Airspeed sensor fitted (2026-11-24, ADR 0007)
+
+The rerun after the elevon split showed that the sensorless synthetic airspeed read about 1.2 m/s low. The
+aircraft flew fast (endurance 18.3 min, V2e failed), and in a 10 m/s beam wind it falsely tripped the
+transition-fail fallback and flew home as a quad until the battery ran low (344 m and 707 m from the pad on
+two runs). The user chose to fit an MS4525DO pitot: pitot on the pod nose, board on the pod floor, 10 g, battery
+13 mm aft after re-balance. CAD audit: 70 parts, 0 conflicts.
+
+Full SITL rerun with the sensor:
+
+| Suite | Result |
+|---|---|
+| Wind 0–10 m/s, two directions | 7/7 (worst 2.1 m from the pad, 10 m/s beam wind) |
+| Faults and model errors | 9/10 (lift motor out in hover crashes, as expected for a quad) |
+| Endurance | 2/2; nominal 19.8 min flown, 20.1 min scaled to 80 % usable (sizing model 21.7, V2e passes) |
+| Monte Carlo | 98/100; median 0.64 m, p95 2.3 m, 89 within 2 m; the two misses landed 7.1 m and 24.8 m off after a long VTOL approach in 6 m/s wind |
+
+Validation: 32/32.
+
+One harness flake: on the first run of `cg_10mm_forward` the autopilot's estimator stopped GPS aiding
+just after take-off at 12 m. The AHRS fell back to DCM, and the aircraft crashed. A rerun of the same case
+landed 0.03 m from the pad, and no other run in the campaign showed this. The harness arms as soon as one
+EKF lane uses GPS. On the real aircraft, arming checks and a longer GPS settle before take-off cover this.
+A harness change to wait for both lanes is an open item.

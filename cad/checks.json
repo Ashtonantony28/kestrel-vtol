@@ -16,17 +16,17 @@
   "outer_spar_L": 1.0,
   "outer_spar_R": 1.0
  },
- "battery_x_for_target_sm": -0.019003489899353847,
- "cg_target_frd_x": -0.16819335785339853,
- "static_margin_cad": 0.09186734444573286,
- "static_margin_min_local_cad": 0.05000223996949489,
- "mass_cad_kg": 1.0554615654757582,
- "mass_budget_kg": 1.054,
- "mass_error_frac": 0.0013866845121044413,
+ "battery_x_for_target_sm": -0.032572569532260294,
+ "cg_target_frd_x": -0.16826407476707725,
+ "static_margin_cad": 0.09204853430541206,
+ "static_margin_min_local_cad": 0.050364050868249736,
+ "mass_cad_kg": 1.0654615654757582,
+ "mass_budget_kg": 1.064,
+ "mass_error_frac": 0.0013736517629305833,
  "cg_frd": [
-  -0.16819274614814883,
-  7.377641120181535e-18,
-  0.006548899945567382
+  -0.16816465741885891,
+  7.310281919690345e-18,
+  0.006769002676762205
  ],
  "sheets": 5,
  "sheets_fit": true,
